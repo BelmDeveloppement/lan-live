@@ -1,0 +1,43 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>LAN Live · sécurité des accès</title><style>
+:root{--bg:#060B16;--bg2:#0A1326;--pn:#0E1A33;--pn2:#13233F;--ln:#1F3556;--tx:#E8F1FF;--mu:#8FA6C8;--cy:#29D3FF;--gr:#3DFF9A;--am:#FFB020;--rd:#FF4D6A;--mg:#D946EF;--a:#3B82F6;--b:#22C55E;--c:#F59E0B;--d:#D946EF}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;min-height:100vh;color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.45;
+ background:radial-gradient(1100px 500px at 85% -10%,#0f2a52 0%,transparent 60%),radial-gradient(900px 500px at -10% 110%,#102a3f 0%,transparent 55%),var(--bg);
+ background-attachment:fixed}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.5;
+ background-image:linear-gradient(var(--ln) 1px,transparent 1px),linear-gradient(90deg,var(--ln) 1px,transparent 1px);background-size:44px 44px;
+ -webkit-mask-image:radial-gradient(ellipse at 50% 0,#000 0,transparent 70%);mask-image:radial-gradient(ellipse at 50% 0,#000 0,transparent 70%)}
+.wrap{position:relative;z-index:1}
+h1,h2,h3{margin:0 0 .4em;font-family:ui-monospace,"Cascadia Code",Consolas,Menlo,monospace;letter-spacing:.02em}
+.mono{font-family:ui-monospace,"Cascadia Code",Consolas,Menlo,monospace}
+button,select,input,textarea{font:inherit}
+.btn{border:1px solid var(--cy);border-radius:10px;padding:.7em 1.15em;font-weight:700;background:linear-gradient(180deg,#123a63,#0c2a4a);color:var(--tx);cursor:pointer;transition:.15s}
+.btn:hover{box-shadow:0 0 0 3px #29d3ff33}.btn:disabled{opacity:.4;cursor:not-allowed;box-shadow:none}
+.btn.go{background:linear-gradient(180deg,#14c277,#0b8f56);border-color:var(--gr);color:#031a0e}
+.btn.alt{background:var(--pn2);border-color:var(--ln);color:var(--tx)}.btn.red{background:linear-gradient(180deg,#b3263f,#85182c);border-color:var(--rd)}
+.btn.sm{padding:.35em .75em;font-size:.85em;border-radius:8px}.btn.xl{font-size:1.25em;padding:.9em 1.4em;width:100%}
+.card{background:linear-gradient(180deg,var(--pn),var(--bg2));border:1px solid var(--ln);border-radius:14px;padding:14px 16px;margin-bottom:12px;box-shadow:0 8px 30px #0006}
+.card h2{color:var(--cy);font-size:1.05em;text-transform:uppercase}
+.muted{color:var(--mu);font-size:.9em}.ok{color:var(--gr);font-weight:700}.ko{color:var(--rd);font-weight:700}
+.tag{display:inline-block;border-radius:99px;padding:.1em .7em;font-size:.78em;font-weight:700;background:var(--pn2);border:1px solid var(--ln);color:var(--mu)}
+.pill{display:inline-block;border-radius:99px;padding:.15em .8em;font-weight:800;font-size:.8em}
+.pill.test{background:var(--am);color:#1b1100}.pill.live{background:var(--rd);color:#fff}
+table{border-collapse:collapse;width:100%}th,td{padding:6px 8px;border-bottom:1px solid var(--ln);text-align:left;vertical-align:top}th{font-size:.75em;color:var(--mu);text-transform:uppercase;letter-spacing:.06em}
+pre.ctx{margin:.5em 0;padding:10px 12px;background:#050A14;border:1px solid var(--ln);border-left:3px solid var(--cy);border-radius:8px;color:#BDEBFF;font:13px/1.5 ui-monospace,"Cascadia Code",Consolas,Menlo,monospace;white-space:pre-wrap;overflow-x:auto}
+.ports{display:inline-flex;gap:3px;vertical-align:middle}.ports i{width:9px;height:9px;border-radius:2px;background:var(--gr);box-shadow:0 0 6px var(--gr);animation:blink 1.6s var(--d) infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
+.opt{display:flex;gap:12px;align-items:center;width:100%;text-align:left;margin:8px 0;padding:12px 14px;background:linear-gradient(180deg,var(--pn2),var(--pn));color:var(--tx);border:2px solid var(--ln);border-radius:12px;cursor:pointer;font-size:1.02em}
+.opt:hover{border-color:var(--oc)}
+.opt .lt{flex:0 0 auto;display:flex;align-items:center;justify-content:center;width:2.4em;height:2.4em;border-radius:7px;background:var(--oc);color:#04101f;font:800 1.1em ui-monospace,Consolas,monospace;box-shadow:inset 0 -3px 0 #0003,0 0 0 3px #0000}
+.opt.sel{border-color:var(--oc);box-shadow:0 0 0 3px color-mix(in srgb,var(--oc) 35%,transparent);background:linear-gradient(180deg,#183052,#10223d)}
+.opt.good{border-color:var(--gr);background:linear-gradient(180deg,#0f3b2a,#0a2a1e)}.opt.bad{border-color:var(--rd);background:linear-gradient(180deg,#43151f,#2b0e15)}
+.opt.dim{opacity:.55}.opt:disabled{cursor:default}
+.cable{height:8px;border-radius:99px;background:#0b1730;border:1px solid var(--ln);overflow:hidden}.cable>div{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--gr),var(--cy));transition:width .4s linear}
+.cable.low>div{background:linear-gradient(90deg,var(--am),var(--rd))}
+.lb td{padding:5px 8px}.lb tr.me{background:#143a5f66;outline:1px solid var(--cy)}.lb .rk{width:2.2em;font-family:ui-monospace,Consolas,monospace;color:var(--cy)}
+.lb .pts{text-align:right;font-family:ui-monospace,Consolas,monospace;font-weight:700}
+.foot{font-size:.72em;color:#5d759b;text-align:center;padding:12px}
+.gain{color:var(--gr);font-family:ui-monospace,Consolas,monospace;font-weight:800}
+.bar{display:inline-block;height:14px;border-radius:3px;vertical-align:middle}
+body{max-width:640px;margin:0 auto;padding:16px}</style></head><body><div class="wrap"><h1 class="mono" style="color:#29D3FF">LAN LIVE</h1><div class="card"><p>Application d’interaction pour le cours « Sécurité des accès » (ACL, VLAN, annuaires, protocoles).</p><p><b>Étudiants :</b> scannez le QR code affiché par l’enseignant.</p><p><b>Enseignant :</b> ouvrez la tour de contrôle sur votre PC et saisissez votre code.</p><p><a class="btn" href="enseignant.html" style="text-decoration:none;display:inline-block">Tour de contrôle</a></p></div><div class="foot">© 2026 SAS BELM DEVELOPPEMENT. Tous droits réservés.</div></div></body></html>

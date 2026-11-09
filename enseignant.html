@@ -1,0 +1,2816 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>LAN Live · tour de contrôle</title><style>
+:root{--bg:#060B16;--bg2:#0A1326;--pn:#0E1A33;--pn2:#13233F;--ln:#1F3556;--tx:#E8F1FF;--mu:#8FA6C8;--cy:#29D3FF;--gr:#3DFF9A;--am:#FFB020;--rd:#FF4D6A;--mg:#D946EF;--a:#3B82F6;--b:#22C55E;--c:#F59E0B;--d:#D946EF}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;min-height:100vh;color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.45;
+ background:radial-gradient(1100px 500px at 85% -10%,#0f2a52 0%,transparent 60%),radial-gradient(900px 500px at -10% 110%,#102a3f 0%,transparent 55%),var(--bg);
+ background-attachment:fixed}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.5;
+ background-image:linear-gradient(var(--ln) 1px,transparent 1px),linear-gradient(90deg,var(--ln) 1px,transparent 1px);background-size:44px 44px;
+ -webkit-mask-image:radial-gradient(ellipse at 50% 0,#000 0,transparent 70%);mask-image:radial-gradient(ellipse at 50% 0,#000 0,transparent 70%)}
+.wrap{position:relative;z-index:1}
+h1,h2,h3{margin:0 0 .4em;font-family:ui-monospace,"Cascadia Code",Consolas,Menlo,monospace;letter-spacing:.02em}
+.mono{font-family:ui-monospace,"Cascadia Code",Consolas,Menlo,monospace}
+button,select,input,textarea{font:inherit}
+.btn{border:1px solid var(--cy);border-radius:10px;padding:.7em 1.15em;font-weight:700;background:linear-gradient(180deg,#123a63,#0c2a4a);color:var(--tx);cursor:pointer;transition:.15s}
+.btn:hover{box-shadow:0 0 0 3px #29d3ff33}.btn:disabled{opacity:.4;cursor:not-allowed;box-shadow:none}
+.btn.go{background:linear-gradient(180deg,#14c277,#0b8f56);border-color:var(--gr);color:#031a0e}
+.btn.alt{background:var(--pn2);border-color:var(--ln);color:var(--tx)}.btn.red{background:linear-gradient(180deg,#b3263f,#85182c);border-color:var(--rd)}
+.btn.sm{padding:.35em .75em;font-size:.85em;border-radius:8px}.btn.xl{font-size:1.25em;padding:.9em 1.4em;width:100%}
+.card{background:linear-gradient(180deg,var(--pn),var(--bg2));border:1px solid var(--ln);border-radius:14px;padding:14px 16px;margin-bottom:12px;box-shadow:0 8px 30px #0006}
+.card h2{color:var(--cy);font-size:1.05em;text-transform:uppercase}
+.muted{color:var(--mu);font-size:.9em}.ok{color:var(--gr);font-weight:700}.ko{color:var(--rd);font-weight:700}
+.tag{display:inline-block;border-radius:99px;padding:.1em .7em;font-size:.78em;font-weight:700;background:var(--pn2);border:1px solid var(--ln);color:var(--mu)}
+.pill{display:inline-block;border-radius:99px;padding:.15em .8em;font-weight:800;font-size:.8em}
+.pill.test{background:var(--am);color:#1b1100}.pill.live{background:var(--rd);color:#fff}
+table{border-collapse:collapse;width:100%}th,td{padding:6px 8px;border-bottom:1px solid var(--ln);text-align:left;vertical-align:top}th{font-size:.75em;color:var(--mu);text-transform:uppercase;letter-spacing:.06em}
+pre.ctx{margin:.5em 0;padding:10px 12px;background:#050A14;border:1px solid var(--ln);border-left:3px solid var(--cy);border-radius:8px;color:#BDEBFF;font:13px/1.5 ui-monospace,"Cascadia Code",Consolas,Menlo,monospace;white-space:pre-wrap;overflow-x:auto}
+.ports{display:inline-flex;gap:3px;vertical-align:middle}.ports i{width:9px;height:9px;border-radius:2px;background:var(--gr);box-shadow:0 0 6px var(--gr);animation:blink 1.6s var(--d) infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
+.opt{display:flex;gap:12px;align-items:center;width:100%;text-align:left;margin:8px 0;padding:12px 14px;background:linear-gradient(180deg,var(--pn2),var(--pn));color:var(--tx);border:2px solid var(--ln);border-radius:12px;cursor:pointer;font-size:1.02em}
+.opt:hover{border-color:var(--oc)}
+.opt .lt{flex:0 0 auto;display:flex;align-items:center;justify-content:center;width:2.4em;height:2.4em;border-radius:7px;background:var(--oc);color:#04101f;font:800 1.1em ui-monospace,Consolas,monospace;box-shadow:inset 0 -3px 0 #0003,0 0 0 3px #0000}
+.opt.sel{border-color:var(--oc);box-shadow:0 0 0 3px color-mix(in srgb,var(--oc) 35%,transparent);background:linear-gradient(180deg,#183052,#10223d)}
+.opt.good{border-color:var(--gr);background:linear-gradient(180deg,#0f3b2a,#0a2a1e)}.opt.bad{border-color:var(--rd);background:linear-gradient(180deg,#43151f,#2b0e15)}
+.opt.dim{opacity:.55}.opt:disabled{cursor:default}
+.cable{height:8px;border-radius:99px;background:#0b1730;border:1px solid var(--ln);overflow:hidden}.cable>div{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--gr),var(--cy));transition:width .4s linear}
+.cable.low>div{background:linear-gradient(90deg,var(--am),var(--rd))}
+.lb td{padding:5px 8px}.lb tr.me{background:#143a5f66;outline:1px solid var(--cy)}.lb .rk{width:2.2em;font-family:ui-monospace,Consolas,monospace;color:var(--cy)}
+.lb .pts{text-align:right;font-family:ui-monospace,Consolas,monospace;font-weight:700}
+.foot{font-size:.72em;color:#5d759b;text-align:center;padding:12px}
+.gain{color:var(--gr);font-family:ui-monospace,Consolas,monospace;font-weight:800}
+.bar{display:inline-block;height:14px;border-radius:3px;vertical-align:middle}
+body{max-width:1100px;margin:0 auto;padding:10px}</style></head><body><div id="lock" class="card wrap" style="max-width:420px;margin:60px auto"><h2>Tour de contrôle</h2><p>Code enseignant :</p><input id="code" type="password" style="width:100%;padding:10px;background:#050A14;color:#E8F1FF;border:1px solid #1F3556;border-radius:8px" onkeydown="if(event.key==='Enter')doUnlock()"><p id="uerr" class="ko"></p><button class="btn go" onclick="doUnlock()">Entrer</button><p class="muted">Le code déchiffre les corrigés ; il n’est jamais envoyé aux joueurs.</p></div><div id="app" style="display:none"></div><script>/* © 2026 SAS BELM DEVELOPPEMENT. Tous droits réservés.  LAN Live : application d'interaction (jeu 22), cours « Sécurité des accès ». */
+'use strict';
+const AC = {};
+AC.DEFAULT_RELAY = 'https://ntfy.sh';
+AC.LET = ['A', 'B', 'C', 'D'];
+AC.LCOL = ['#3B82F6', '#22C55E', '#F59E0B', '#D946EF'];   // A à D : couleurs de VLAN 10, 20, 30, 40
+AC.VLAN = [10, 20, 30, 40];
+AC.BASE = 100; AC.SPEED = 50; AC.STREAK = 10; AC.STREAKMAX = 5;
+AC.esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+AC.sleep = ms => new Promise(r => setTimeout(r, ms));
+AC.rid = n => { const a = 'abcdefghjkmnpqrstuvwxyz23456789'; let s = ''; const b = new Uint8Array(n); crypto.getRandomValues(b); b.forEach(x => s += a[x % a.length]); return s; };
+AC.hash = () => { const o = {}; location.hash.replace(/^#/, '').split('&').forEach(p => { const i = p.indexOf('='); if (i > 0) o[p.slice(0, i)] = decodeURIComponent(p.slice(i + 1)); }); return o; };
+AC.fmtT = s => { s = Math.max(0, Math.round(s)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
+AC.ms = ms => (ms / 1000).toFixed(1).replace('.', ',') + ' s';
+AC.q = id => AC.PUB.qs[id];
+AC.grp = id => AC.PUB.groups.find(g => g.id === id);
+AC.rankList = pl => Object.keys(pl).map(p => Object.assign({pid:p}, pl[p])).sort((a, b) => (b.pts - a.pts) || (a.tt - b.tt) || a.n.localeCompare(b.n, 'fr'));
+
+/* ---------------- Relais (ntfy) : états diffusés en morceaux ---------------- */
+AC.CH = 1500;
+AC.Relay = function (base, sid) {
+  this.base = (base || AC.DEFAULT_RELAY).replace(/\/+$/, '');
+  this.tH = 'ac' + sid + 'h'; this.tP = 'ac' + sid + 'p'; this.tS = 'ac' + sid + 's';
+};
+AC.Relay.prototype.post = async function (topic, obj) {
+  const body = JSON.stringify(obj);
+  for (let i = 0; i < 5; i++) {
+    try { const r = await fetch(this.base + '/' + topic, {method:'POST', body}); if (r.ok) return true; if (r.status === 429) await AC.sleep(4000); }
+    catch (e) { /* réseau */ }
+    await AC.sleep(500 * (i + 1));
+  }
+  return false;
+};
+AC.Relay.prototype.sub = function (topic, since, onmsg, onstatus) {
+  let last = since, es = null, dead = false;
+  const open = () => {
+    if (dead) return;
+    es = new EventSource(this.base + '/' + topic + '/sse?since=' + encodeURIComponent(last));
+    es.onopen = () => onstatus && onstatus('ok');
+    es.onerror = () => { onstatus && onstatus('retry'); try { es.close(); } catch (e) {} setTimeout(open, 2500); };
+    es.onmessage = e => {
+      let m; try { m = JSON.parse(e.data); } catch (x) { return; }
+      if (m.event && m.event !== 'message') return;
+      if (m.id) last = m.id;
+      let o; try { o = JSON.parse(m.message); } catch (x) { return; }
+      onmsg(o, m);
+    };
+  };
+  open();
+  return () => { dead = true; try { es.close(); } catch (e) {} };
+};
+AC.Relay.prototype.pubState = function (st) {
+  const s = JSON.stringify(st), n = Math.ceil(s.length / AC.CH);
+  this._pending = {v: st.v, s, n};
+  if (this._busy) return;
+  this._busy = true;
+  (async () => {
+    while (this._pending) {
+      const p = this._pending; this._pending = null;
+      let ok = true;
+      for (let i = 0; i < p.n && ok; i++) ok = await this.post(this.tH, {v: p.v, i, n: p.n, d: p.s.slice(i * AC.CH, (i + 1) * AC.CH)});
+      this.lastOk = ok;
+    }
+    this._busy = false;
+  })();
+};
+AC.Assembler = function (cb) {
+  const parts = {}; let cur = -1;
+  return o => {
+    if (o == null || o.v == null || o.v < cur) return;
+    const p = parts[o.v] || (parts[o.v] = {n: o.n, a: []});
+    p.a[o.i] = o.d;
+    let ok = true; for (let i = 0; i < p.n; i++) if (p.a[i] == null) ok = false;
+    if (ok && o.v > cur) {
+      cur = o.v;
+      try { cb(JSON.parse(p.a.join(''))); } catch (e) { console.error(e); }
+      Object.keys(parts).forEach(k => { if (+k < cur) delete parts[k]; });
+    }
+  };
+};
+
+/* ---------------- Habillage : salle réseau / supervision ---------------- */
+AC.PORTS = n => '<span class="ports">' + Array.from({length:n}, (_, i) => `<i style="--d:${(i * 0.13).toFixed(2)}s"></i>`).join('') + '</span>';
+AC.CSS = `
+:root{--bg:#060B16;--bg2:#0A1326;--pn:#0E1A33;--pn2:#13233F;--ln:#1F3556;--tx:#E8F1FF;--mu:#8FA6C8;--cy:#29D3FF;--gr:#3DFF9A;--am:#FFB020;--rd:#FF4D6A;--mg:#D946EF;--a:#3B82F6;--b:#22C55E;--c:#F59E0B;--d:#D946EF}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;min-height:100vh;color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.45;
+ background:radial-gradient(1100px 500px at 85% -10%,#0f2a52 0%,transparent 60%),radial-gradient(900px 500px at -10% 110%,#102a3f 0%,transparent 55%),var(--bg);
+ background-attachment:fixed}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.5;
+ background-image:linear-gradient(var(--ln) 1px,transparent 1px),linear-gradient(90deg,var(--ln) 1px,transparent 1px);background-size:44px 44px;
+ -webkit-mask-image:radial-gradient(ellipse at 50% 0,#000 0,transparent 70%);mask-image:radial-gradient(ellipse at 50% 0,#000 0,transparent 70%)}
+.wrap{position:relative;z-index:1}
+h1,h2,h3{margin:0 0 .4em;font-family:ui-monospace,"Cascadia Code",Consolas,Menlo,monospace;letter-spacing:.02em}
+.mono{font-family:ui-monospace,"Cascadia Code",Consolas,Menlo,monospace}
+button,select,input,textarea{font:inherit}
+.btn{border:1px solid var(--cy);border-radius:10px;padding:.7em 1.15em;font-weight:700;background:linear-gradient(180deg,#123a63,#0c2a4a);color:var(--tx);cursor:pointer;transition:.15s}
+.btn:hover{box-shadow:0 0 0 3px #29d3ff33}.btn:disabled{opacity:.4;cursor:not-allowed;box-shadow:none}
+.btn.go{background:linear-gradient(180deg,#14c277,#0b8f56);border-color:var(--gr);color:#031a0e}
+.btn.alt{background:var(--pn2);border-color:var(--ln);color:var(--tx)}.btn.red{background:linear-gradient(180deg,#b3263f,#85182c);border-color:var(--rd)}
+.btn.sm{padding:.35em .75em;font-size:.85em;border-radius:8px}.btn.xl{font-size:1.25em;padding:.9em 1.4em;width:100%}
+.card{background:linear-gradient(180deg,var(--pn),var(--bg2));border:1px solid var(--ln);border-radius:14px;padding:14px 16px;margin-bottom:12px;box-shadow:0 8px 30px #0006}
+.card h2{color:var(--cy);font-size:1.05em;text-transform:uppercase}
+.muted{color:var(--mu);font-size:.9em}.ok{color:var(--gr);font-weight:700}.ko{color:var(--rd);font-weight:700}
+.tag{display:inline-block;border-radius:99px;padding:.1em .7em;font-size:.78em;font-weight:700;background:var(--pn2);border:1px solid var(--ln);color:var(--mu)}
+.pill{display:inline-block;border-radius:99px;padding:.15em .8em;font-weight:800;font-size:.8em}
+.pill.test{background:var(--am);color:#1b1100}.pill.live{background:var(--rd);color:#fff}
+table{border-collapse:collapse;width:100%}th,td{padding:6px 8px;border-bottom:1px solid var(--ln);text-align:left;vertical-align:top}th{font-size:.75em;color:var(--mu);text-transform:uppercase;letter-spacing:.06em}
+pre.ctx{margin:.5em 0;padding:10px 12px;background:#050A14;border:1px solid var(--ln);border-left:3px solid var(--cy);border-radius:8px;color:#BDEBFF;font:13px/1.5 ui-monospace,"Cascadia Code",Consolas,Menlo,monospace;white-space:pre-wrap;overflow-x:auto}
+.ports{display:inline-flex;gap:3px;vertical-align:middle}.ports i{width:9px;height:9px;border-radius:2px;background:var(--gr);box-shadow:0 0 6px var(--gr);animation:blink 1.6s var(--d) infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
+.opt{display:flex;gap:12px;align-items:center;width:100%;text-align:left;margin:8px 0;padding:12px 14px;background:linear-gradient(180deg,var(--pn2),var(--pn));color:var(--tx);border:2px solid var(--ln);border-radius:12px;cursor:pointer;font-size:1.02em}
+.opt:hover{border-color:var(--oc)}
+.opt .lt{flex:0 0 auto;display:flex;align-items:center;justify-content:center;width:2.4em;height:2.4em;border-radius:7px;background:var(--oc);color:#04101f;font:800 1.1em ui-monospace,Consolas,monospace;box-shadow:inset 0 -3px 0 #0003,0 0 0 3px #0000}
+.opt.sel{border-color:var(--oc);box-shadow:0 0 0 3px color-mix(in srgb,var(--oc) 35%,transparent);background:linear-gradient(180deg,#183052,#10223d)}
+.opt.good{border-color:var(--gr);background:linear-gradient(180deg,#0f3b2a,#0a2a1e)}.opt.bad{border-color:var(--rd);background:linear-gradient(180deg,#43151f,#2b0e15)}
+.opt.dim{opacity:.55}.opt:disabled{cursor:default}
+.cable{height:8px;border-radius:99px;background:#0b1730;border:1px solid var(--ln);overflow:hidden}.cable>div{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--gr),var(--cy));transition:width .4s linear}
+.cable.low>div{background:linear-gradient(90deg,var(--am),var(--rd))}
+.lb td{padding:5px 8px}.lb tr.me{background:#143a5f66;outline:1px solid var(--cy)}.lb .rk{width:2.2em;font-family:ui-monospace,Consolas,monospace;color:var(--cy)}
+.lb .pts{text-align:right;font-family:ui-monospace,Consolas,monospace;font-weight:700}
+.foot{font-size:.72em;color:#5d759b;text-align:center;padding:12px}
+.gain{color:var(--gr);font-family:ui-monospace,Consolas,monospace;font-weight:800}
+.bar{display:inline-block;height:14px;border-radius:3px;vertical-align:middle}
+`;
+AC.FOOT = '© 2026 SAS BELM DEVELOPPEMENT. Tous droits réservés. · LAN Live · jeu 22';
+</script><script>AC.PUB={"groups":[{"id":"G07","slide":7,"titre":"Matrice d’accès","chap":"ACL et modèles","qs":["Q001"]},{"id":"G12","slide":12,"titre":"Exercice ACL sous Linux","chap":"ACL et modèles","qs":["Q002","Q003","Q004"]},{"id":"G16","slide":16,"titre":"EX 1 · Lire une ACL réseau","chap":"ACL et modèles","qs":["Q005","Q006","Q007","Q008","Q009"]},{"id":"G22","slide":22,"titre":"EX 2 · Push ou Pull chez TransLor","chap":"ACL et modèles","qs":["Q010","Q011","Q012","Q013"]},{"id":"G30","slide":30,"titre":"Quiz VLAN : l’acronyme","chap":"VLAN","qs":["Q014"]},{"id":"G34","slide":34,"titre":"EX 3 · Plan de VLAN de TransLor","chap":"VLAN","qs":["Q015","Q016","Q017"]},{"id":"G40","slide":40,"titre":"VLAN : compléter les trous","chap":"VLAN","qs":["Q018","Q019","Q020"]},{"id":"G43","slide":43,"titre":"Question sur le VLAN tagging","chap":"VLAN","qs":["Q021"]},{"id":"G48","slide":48,"titre":"EX 4 · Configuration d’un trunk","chap":"VLAN","qs":["Q022","Q023","Q024"]},{"id":"G51","slide":51,"titre":"VLAN hopping","chap":"VLAN","qs":["Q025","Q026"]},{"id":"G53","slide":53,"titre":"EX 5 · Inter-VLAN","chap":"VLAN","qs":["Q027","Q028","Q029"]},{"id":"G58","slide":58,"titre":"VTP","chap":"VLAN","qs":["Q030","Q031"]},{"id":"G70","slide":70,"titre":"EX 6 · Qui devient Root Bridge ?","chap":"VLAN","qs":["Q032","Q033","Q034"]},{"id":"G74","slide":74,"titre":"Flash VLAN et STP","chap":"VLAN","qs":["Q035","Q036","Q037"]},{"id":"G79","slide":79,"titre":"Domaine de diffusion","chap":"VLAN","qs":["Q038","Q039"]},{"id":"G80","slide":80,"titre":"Quizz VLAN 1/4","chap":"VLAN","qs":["Q040"]},{"id":"G81","slide":81,"titre":"Quizz VLAN 2/4","chap":"VLAN","qs":["Q041"]},{"id":"G82","slide":82,"titre":"Quizz VLAN 3/4","chap":"VLAN","qs":["Q042"]},{"id":"G83","slide":83,"titre":"Quizz VLAN 4/4","chap":"VLAN","qs":["Q043"]},{"id":"G90","slide":90,"titre":"Adresses MAC : combien ?","chap":"Filtrage MAC","qs":["Q044"]},{"id":"G93","slide":93,"titre":"Filtrage MAC : ses limites","chap":"Filtrage MAC","qs":["Q045","Q046"]},{"id":"G94","slide":94,"titre":"Exercice MAC 1 : votre adresse","chap":"Filtrage MAC","qs":["Q047"]},{"id":"G96","slide":96,"titre":"Exercice MAC 2 : la table ARP","chap":"Filtrage MAC","qs":["Q048"]},{"id":"G101","slide":101,"titre":"Les 3A","chap":"Annuaires et authentification","qs":["Q049","Q050"]},{"id":"G104","slide":104,"titre":"LDAP","chap":"Annuaires et authentification","qs":["Q051","Q052"]},{"id":"G108","slide":108,"titre":"EX 7 · Lire un annuaire LDAP","chap":"Annuaires et authentification","qs":["Q053","Q054","Q055"]},{"id":"G116","slide":116,"titre":"Structure d’Active Directory","chap":"Active Directory","qs":["Q056","Q057"]},{"id":"G117","slide":117,"titre":"EX 8 · Groupes AD : la chaîne AGDLP","chap":"Active Directory","qs":["Q058","Q059","Q060"]},{"id":"G124","slide":124,"titre":"EX 9 · Lire un journal de sécurité Windows","chap":"Active Directory","qs":["Q061","Q062","Q063"]},{"id":"G128","slide":128,"titre":"SID, forêts et relations de confiance","chap":"Active Directory","qs":["Q064","Q065"]},{"id":"G131","slide":131,"titre":"Flash Active Directory","chap":"Active Directory","qs":["Q066","Q067","Q068"]},{"id":"G138","slide":138,"titre":"EX 10 · GPO : qui l’emporte ?","chap":"Active Directory","qs":["Q069","Q070","Q071"]},{"id":"G144","slide":144,"titre":"Flash : 802.1X, les bases","chap":"802.1X, RADIUS, Kerberos","qs":["Q072","Q073","Q074"]},{"id":"G148","slide":148,"titre":"EX 11 · 802.1X : qui parle à qui ?","chap":"802.1X, RADIUS, Kerberos","qs":["Q075","Q076"]},{"id":"G153","slide":153,"titre":"EAP : les méthodes","chap":"802.1X, RADIUS, Kerberos","qs":["Q077","Q078"]},{"id":"G154","slide":154,"titre":"EX 12 · Choisir une méthode EAP","chap":"802.1X, RADIUS, Kerberos","qs":["Q079","Q080"]},{"id":"G158","slide":158,"titre":"RADIUS","chap":"802.1X, RADIUS, Kerberos","qs":["Q081","Q082"]},{"id":"G159","slide":159,"titre":"EX 13 · Lire un journal RADIUS","chap":"802.1X, RADIUS, Kerberos","qs":["Q083","Q084","Q085"]},{"id":"G164","slide":164,"titre":"EX 14 · Kerberos : l’ordre des échanges","chap":"802.1X, RADIUS, Kerberos","qs":["Q086","Q087","Q088"]},{"id":"G170","slide":170,"titre":"CHAP, PAP et TACACS+","chap":"802.1X, RADIUS, Kerberos","qs":["Q089","Q090"]},{"id":"G171","slide":171,"titre":"EX 15 · Quel protocole pour quel besoin ?","chap":"802.1X, RADIUS, Kerberos","qs":["Q091","Q092","Q093"]},{"id":"G178","slide":178,"titre":"Longueur d’un mot de passe","chap":"Mots de passe et MFA","qs":["Q094"]},{"id":"G182","slide":182,"titre":"EX 16 · Lire une ligne de /etc/shadow","chap":"Mots de passe et MFA","qs":["Q095","Q096","Q097"]},{"id":"G189","slide":189,"titre":"EX 17 · Temps pour casser un mot de passe","chap":"Mots de passe et MFA","qs":["Q098","Q099","Q100"]},{"id":"G196","slide":196,"titre":"Flash : sel, poivre et rainbow tables","chap":"Mots de passe et MFA","qs":["Q101","Q102","Q103"]},{"id":"G199","slide":199,"titre":"Rainbow tables","chap":"Mots de passe et MFA","qs":["Q104","Q105"]},{"id":"G202","slide":202,"titre":"MFA : un peu de maths","chap":"Mots de passe et MFA","qs":["Q106"]},{"id":"G207","slide":207,"titre":"Facteurs d’authentification","chap":"Mots de passe et MFA","qs":["Q107","Q108"]},{"id":"G209","slide":209,"titre":"EX 18 · Choisir le MFA par population","chap":"Mots de passe et MFA","qs":["Q109","Q110","Q111"]},{"id":"G213","slide":213,"titre":"FIDO2, WebAuthn, CTAP","chap":"Mots de passe et MFA","qs":["Q112","Q113"]},{"id":"G214","slide":214,"titre":"Flash MFA","chap":"Mots de passe et MFA","qs":["Q114","Q115","Q116"]},{"id":"G220","slide":220,"titre":"EX 19 · Arrivée, mutation, départ","chap":"Gouvernance des accès","qs":["Q117","Q118","Q119"]},{"id":"G225","slide":225,"titre":"IAM et IGA","chap":"Gouvernance des accès","qs":["Q120","Q121","Q122"]},{"id":"G226","slide":226,"titre":"EX 20 · Audit final : les accès de TransLor","chap":"Gouvernance des accès","qs":["Q123","Q124","Q125"]},{"id":"G228","slide":228,"titre":"Question finale (points doublés)","chap":"Finale","qs":["Q126","Q127","Q128","Q129"]}],"qs":{"Q001":{"g":"G07","txt":"Dans une matrice d’accès, que contient une case située à l’intersection d’une ligne et d’une colonne ?","ctx":null,"opts":["L’adresse IP du sujet et le port de l’objet","Les droits du sujet (ligne) sur l’objet (colonne)","Le mot de passe du sujet et sa dernière connexion","Le nombre de connexions autorisées par jour"],"t":30,"final":false},"Q002":{"g":"G12","txt":"Quelle commande affiche les ACL du fichier essai.txt ?","ctx":null,"opts":["setfacl -l essai.txt","ls -Z essai.txt","getfacl essai.txt","lsattr essai.txt"],"t":30,"final":false},"Q003":{"g":"G12","txt":"Quelle commande donne à Alice le contrôle total (rwx) sur essai.txt ?","ctx":null,"opts":["setfacl -x u:alice essai.txt","chmod alice+rwx essai.txt","setfacl -m u:alice:rwx essai.txt","getfacl -m u:alice:rwx essai.txt"],"t":30,"final":false},"Q004":{"g":"G12","txt":"Quelle commande supprime l’entrée ACL d’Alice sur essai.txt ?","ctx":null,"opts":["setfacl -x u:alice essai.txt","setfacl -m u:alice:rwx essai.txt","setfacl -d alice essai.txt","getfacl -x u:alice essai.txt"],"t":30,"final":false},"Q005":{"g":"G16","txt":"Paquet b : 192.168.30.7 vers 192.168.20.10, TCP 443 (entrepôt vers le serveur TMS). Quelle ligne s’applique et quelle décision ?","ctx":"1 permit tcp 192.168.10.0 0.0.0.255 host 192.168.20.10 eq 443\n2 deny   ip  192.168.30.0 0.0.0.255 192.168.20.0 0.0.0.255\n3 permit tcp 192.168.40.0 0.0.0.255 host 192.168.20.10 eq 443\n4 permit tcp any host 192.168.20.30 eq 25\n(refus implicite : deny ip any any)","opts":["Ligne 1 : permit","Ligne 3 : permit","Aucune ligne : deny implicite","Ligne 2 : deny"],"t":45,"final":false},"Q006":{"g":"G16","txt":"Paquet d : 192.168.40.9 vers 192.168.20.20, TCP 445 (SMB vers le serveur de fichiers). Décision ?","ctx":"1 permit tcp 192.168.10.0 0.0.0.255 host 192.168.20.10 eq 443\n2 deny   ip  192.168.30.0 0.0.0.255 192.168.20.0 0.0.0.255\n3 permit tcp 192.168.40.0 0.0.0.255 host 192.168.20.10 eq 443\n4 permit tcp any host 192.168.20.30 eq 25\n(refus implicite : deny ip any any)","opts":["permit, par la ligne 3 (réseau des tablettes autorisé)","deny, par la ligne 2 (conducteurs interdits aux serveurs)","permit, par la ligne 4 (flux vers le serveur de messagerie)","deny, par le refus implicite (aucune ligne ne correspond)"],"t":45,"final":false},"Q007":{"g":"G16","txt":"Paquet f : 203.0.113.5 (Internet) vers 192.168.20.30, TCP 25. Quelle ligne s’applique ?","ctx":"1 permit tcp 192.168.10.0 0.0.0.255 host 192.168.20.10 eq 443\n2 deny   ip  192.168.30.0 0.0.0.255 192.168.20.0 0.0.0.255\n3 permit tcp 192.168.40.0 0.0.0.255 host 192.168.20.10 eq 443\n4 permit tcp any host 192.168.20.30 eq 25\n(refus implicite : deny ip any any)","opts":["Ligne 1 : permit (HTTPS vers le TMS)","Ligne 4 : permit (messagerie SMTP)","Ligne 2 : deny (réseau interdit aux serveurs)","Aucune ligne : deny par refus implicite"],"t":40,"final":false},"Q008":{"g":"G16","txt":"Que devient la protection si l’on ajoute « permit ip any any » en première ligne ?","ctx":"1 permit tcp 192.168.10.0 0.0.0.255 host 192.168.20.10 eq 443\n2 deny   ip  192.168.30.0 0.0.0.255 192.168.20.0 0.0.0.255\n3 permit tcp 192.168.40.0 0.0.0.255 host 192.168.20.10 eq 443\n4 permit tcp any host 192.168.20.30 eq 25\n(refus implicite : deny ip any any)","opts":["Rien ne change : le refus implicite reste prioritaire","Tout est autorisé : les lignes suivantes ne sont jamais lues","Tout est refusé : la ligne 1 bloque les lignes suivantes","Seuls les paquets TCP sont autorisés, les autres restent filtrés"],"t":30,"final":false},"Q009":{"g":"G16","txt":"Que signifie le masque 0.0.0.255 dans « 192.168.10.0 0.0.0.255 » ?","ctx":null,"opts":["On ne compare que le dernier octet","Seule l’adresse 192.168.10.0 est visée","On compare les 3 premiers octets : tout le /24 est visé","On ignore tout sauf le premier octet"],"t":30,"final":false},"Q010":{"g":"G22","txt":"À l’embauche d’un gestionnaire, l’administrateur lui attribue automatiquement les droits standards du poste. Push ou Pull ?","ctx":null,"opts":["Pull : l’utilisateur demande","Ni l’un ni l’autre","Push : l’administrateur impose","Les deux à la fois"],"t":20,"final":false},"Q011":{"g":"G22","txt":"Un conducteur demande l’accès au dossier « Litiges clients » via un formulaire validé par son responsable. Push ou Pull ?","ctx":null,"opts":["Pull : l’utilisateur demande, le responsable valide","Push : l’administrateur impose le droit sans demande","Push : le formulaire valide automatiquement l’accès","Ni l’un ni l’autre : ce n’est pas une attribution de droit"],"t":20,"final":false},"Q012":{"g":"G22","txt":"Une nouvelle règle (verrouillage d’écran à 10 minutes) est déployée sur les 75 postes. Quel est le risque principal de cette stratégie ?","ctx":null,"opts":["Push : une erreur touche tout le parc","Pull : oubli de retrait en fin de période","Push : délais de validation","Pull : droits trop larges pour tous"],"t":30,"final":false},"Q013":{"g":"G22","txt":"Un gestionnaire demande un droit temporaire de 7 jours dans le portail de demandes d’accès. Quelle est la bonne pratique associée ?","ctx":null,"opts":["Donner le droit définitivement pour éviter une nouvelle demande","Refuser : seul le Push est autorisé","Ne rien journaliser pour aller plus vite","Valider la demande et prévoir une date de fin"],"t":30,"final":false},"Q014":{"g":"G30","txt":"Que signifie l’acronyme VLAN dans le contexte des réseaux informatiques ?","ctx":null,"opts":["Virtual Local Area Network","Verified Logical Access Node","Variable Link Aggregation Network","Virtual Layer Access Node"],"t":20,"final":false},"Q015":{"g":"G34","txt":"Combien d’adresses utilisables offre un réseau /24 ?","ctx":null,"opts":["256","254","255","252"],"t":30,"final":false},"Q016":{"g":"G34","txt":"Pourquoi isoler les équipements (switchs, bornes) dans un VLAN de gestion (99) ?","ctx":null,"opts":["Pour augmenter la bande passante disponible entre les switchs","Pour éviter de devoir configurer des mots de passe sur les switchs","Pour qu’un invité ou un poste ne puisse pas atteindre l’administration des équipements","Parce que le VLAN 99 est imposé par la norme 802.1Q"],"t":30,"final":false},"Q017":{"g":"G34","txt":"Quel flux faut-il autoriser depuis le VLAN Entrepôt (30) vers les serveurs, selon le principe du moindre privilège ?","ctx":null,"opts":["Tous les serveurs, tous les ports","Le serveur AD et la messagerie, tous les ports","Aucun flux, les scanners n’en ont pas besoin","Le TMS seulement, en HTTPS (443)"],"t":30,"final":false},"Q018":{"g":"G40","txt":"Un port qui n’appartient qu’à un seul VLAN (ici le VLAN 10) est un port…","ctx":null,"opts":["access","trunk","miroir","natif"],"t":20,"final":false},"Q019":{"g":"G40","txt":"L’identifiant d’un VLAN (de 1 à 4094) s’appelle…","ctx":null,"opts":["le TCI","le Bridge ID","le SID","le VLAN ID (VID)"],"t":20,"final":false},"Q020":{"g":"G40","txt":"Pour qu’un port transporte le trafic de plusieurs VLAN, on le configure en…","ctx":null,"opts":["access","trunk","miroir","loopback"],"t":20,"final":false},"Q021":{"g":"G43","txt":"Un tag VLAN est-il ajouté lorsqu’une trame traverse…","ctx":null,"opts":["un port Access","les deux types de port","aucun des deux","un port Trunk"],"t":20,"final":false},"Q022":{"g":"G48","txt":"Quels VLAN circulent sur le trunk Gi0/24 ?","ctx":"interface GigabitEthernet0/24\n  switchport mode trunk\n  switchport trunk allowed vlan 10,20,30\n  switchport trunk native vlan 1\n!\ninterface GigabitEthernet0/5\n  switchport mode access\n  switchport access vlan 30\n!\n(switch distant : native vlan 10)","opts":["VLAN 10 et 30 seulement","Tous les VLAN de 1 à 4094","VLAN 1 seulement","VLAN 10, 20 et 30"],"t":30,"final":false},"Q023":{"g":"G48","txt":"Un scanner est branché sur Gi0/5. Dans quel VLAN est-il et ses trames sont-elles taguées ?","ctx":"interface GigabitEthernet0/24\n  switchport mode trunk\n  switchport trunk allowed vlan 10,20,30\n  switchport trunk native vlan 1\n!\ninterface GigabitEthernet0/5\n  switchport mode access\n  switchport access vlan 30\n!\n(switch distant : native vlan 10)","opts":["VLAN 30, trames taguées","VLAN 1, trames non taguées","VLAN 30, trames non taguées","VLAN 10, trames taguées"],"t":30,"final":false},"Q024":{"g":"G48","txt":"Quel problème voyez-vous sur le native VLAN ?","ctx":"interface GigabitEthernet0/24\n  switchport mode trunk\n  switchport trunk allowed vlan 10,20,30\n  switchport trunk native vlan 1\n!\ninterface GigabitEthernet0/5\n  switchport mode access\n  switchport access vlan 30\n!\n(switch distant : native vlan 10)","opts":["Aucun problème : c’est la bonne pratique recommandée","Le native VLAN devrait être le VLAN le plus utilisé par les postes","Native VLAN incohérent entre les deux côtés (1 et 10), et VLAN 1 par défaut","Le native VLAN ne devrait pas être déclaré sur un trunk"],"t":45,"final":false},"Q025":{"g":"G51","txt":"Quelle protection est la plus efficace contre le VLAN hopping par double tagging ?","ctx":null,"opts":["Un mot de passe plus long sur l’accès aux switchs","Un native VLAN dédié inutilisé et une liste de VLAN autorisés","Placer tous les postes utilisateurs dans le VLAN 1","Désactiver le protocole STP sur tous les ports"],"t":30,"final":false},"Q026":{"g":"G51","txt":"Dans le double tagging, que fait le premier switch ?","ctx":null,"opts":["Il refuse la trame car elle porte deux tags","Il retire les deux tags avant de l’envoyer sur le trunk","Il ajoute un troisième tag pour le VLAN natif","Il retire le tag externe (VLAN natif) et laisse le tag interne"],"t":30,"final":false},"Q027":{"g":"G53","txt":"Quelle passerelle par défaut pour le poste 192.168.10.25 (VLAN 10) ?","ctx":"interface Gi0/0.10\n  encapsulation dot1Q 10\n  ip address 192.168.10.1 255.255.255.0\ninterface Gi0/0.20\n  encapsulation dot1Q 20\n  ip address 192.168.20.1 255.255.255.0","opts":["192.168.10.1","192.168.20.1","192.168.10.25","192.168.20.10"],"t":25,"final":false},"Q028":{"g":"G53","txt":"Où placer l’ACL qui filtre les flux entre VLAN ?","ctx":"interface Gi0/0.10\n  encapsulation dot1Q 10\n  ip address 192.168.10.1 255.255.255.0\ninterface Gi0/0.20\n  encapsulation dot1Q 20\n  ip address 192.168.20.1 255.255.255.0","opts":["Sur le routeur, à l’entrée ou à la sortie des sous-interfaces","Sur les ports access des switchs, côté postes uniquement","Sur le poste de l’utilisateur, dans son pare-feu local","Nulle part : le tag 802.1Q suffit à filtrer les flux"],"t":30,"final":false},"Q029":{"g":"G53","txt":"Que se passe-t-il si aucune ACL n’existe sur le routeur inter-VLAN ?","ctx":"interface Gi0/0.10\n  encapsulation dot1Q 10\n  ip address 192.168.10.1 255.255.255.0\ninterface Gi0/0.20\n  encapsulation dot1Q 20\n  ip address 192.168.20.1 255.255.255.0","opts":["Les VLAN ne peuvent plus communiquer entre eux du tout","Seuls les VLAN déclarés taguées peuvent communiquer","Le trafic entre VLAN est automatiquement chiffré","Tous les VLAN se parlent : la segmentation ne protège plus"],"t":30,"final":false},"Q030":{"g":"G58","txt":"Un switch client VTP reçoit un message avec un numéro de révision plus élevé que le sien. Que fait-il ?","ctx":null,"opts":["Il ignore le message et garde sa propre base de VLAN","Il met à jour sa base de VLAN avec celle du message","Il devient serveur VTP à la place du serveur actuel","Il coupe son trunk par sécurité jusqu’à validation"],"t":30,"final":false},"Q031":{"g":"G58","txt":"Dans quel mode un switch VTP ignore-t-il les VLAN du serveur tout en relayant les messages ?","ctx":null,"opts":["Transparent","Client","Serveur","Désactivé"],"t":25,"final":false},"Q032":{"g":"G70","txt":"Quel switch est Root Bridge avant l’attaque ?","ctx":"Switch  Priorité  Adresse MAC\nSW1     32768     00:aa:00:00:00:10\nSW2     32768     00:aa:00:00:00:05\nSW3     32768     00:aa:00:00:00:0c\nUn poste malveillant branché sur SW3 envoie des BPDU annonçant une priorité de 0.","opts":["SW1","SW3","Aucun, il faut un vote","SW2"],"t":40,"final":false},"Q033":{"g":"G70","txt":"Qui devient Root Bridge après l’attaque ?","ctx":"Switch  Priorité  Adresse MAC\nSW1     32768     00:aa:00:00:00:10\nSW2     32768     00:aa:00:00:00:05\nSW3     32768     00:aa:00:00:00:0c\nUn poste malveillant branché sur SW3 envoie des BPDU annonçant une priorité de 0.","opts":["SW2, la priorité par défaut est protégée","SW3","SW1","Le poste malveillant (priorité 0)"],"t":30,"final":false},"Q034":{"g":"G70","txt":"Quelle protection empêche un poste d’imposer son Root Bridge ?","ctx":"Switch  Priorité  Adresse MAC\nSW1     32768     00:aa:00:00:00:10\nSW2     32768     00:aa:00:00:00:05\nSW3     32768     00:aa:00:00:00:0c\nUn poste malveillant branché sur SW3 envoie des BPDU annonçant une priorité de 0.","opts":["BPDU Guard sur les ports d’accès (et Root Guard)","Activer le VTP en mode serveur sur tous les switchs","Augmenter le numéro du VLAN natif sur les trunks","Changer l’adresse MAC du switch de cœur chaque semaine"],"t":30,"final":false},"Q035":{"g":"G74","txt":"Quel type de port transporte plusieurs VLAN ?","ctx":null,"opts":["Access","Miroir","Trunk","Loopback"],"t":20,"final":false},"Q036":{"g":"G74","txt":"Que fait BPDU Guard sur un port d’accès ?","ctx":null,"opts":["Il chiffre le trafic des postes connectés au port","Il coupe le port s’il reçoit des BPDU","Il attribue automatiquement le VLAN du poste","Il élit le port comme Root Bridge du réseau"],"t":25,"final":false},"Q037":{"g":"G74","txt":"Combien d’adresses utilisables dans un /24 ?","ctx":null,"opts":["256","252","254","255"],"t":25,"final":false},"Q038":{"g":"G79","txt":"Pourquoi découper un réseau en plusieurs domaines de diffusion (VLAN) améliore-t-il la sécurité ?","ctx":null,"opts":["Moins de machines voient les broadcasts, la surface d’attaque diminue","Les broadcasts deviennent chiffrés de bout en bout","Les adresses MAC des postes deviennent secrètes","Le routeur n’est plus nécessaire pour communiquer"],"t":30,"final":false},"Q039":{"g":"G79","txt":"Combien de domaines de diffusion compte un switch configuré avec 4 VLAN actifs (hors routage) ?","ctx":null,"opts":["1","2","8","4"],"t":25,"final":false},"Q040":{"g":"G80","txt":"Quel est l’objectif principal de l’utilisation des VLAN dans un réseau d’entreprise ?","ctx":null,"opts":["Augmenter la bande passante globale du réseau","Permettre l’accès à Internet sans pare-feu","Segmenter le réseau pour améliorer sécurité et gestion","Accélérer le routage entre les serveurs"],"t":25,"final":false},"Q041":{"g":"G81","txt":"Quel protocole est utilisé pour transporter plusieurs VLAN sur un même lien physique ?","ctx":null,"opts":["DHCP","FTP","802.1Q","SNMP"],"t":20,"final":false},"Q042":{"g":"G82","txt":"Quel type de port sur un switch connecte un hôte à un VLAN spécifique ?","ctx":null,"opts":["Access port","Mirror port","Trunk port","Management port"],"t":20,"final":false},"Q043":{"g":"G83","txt":"Que se passe-t-il lorsqu’une trame arrive sans tag 802.1Q sur un port trunk ?","ctx":null,"opts":["Elle est associée au VLAN natif","Elle est ignorée","Elle est envoyée à tous les VLAN","Elle est redirigée vers le VLAN de management"],"t":25,"final":false},"Q044":{"g":"G90","txt":"Une adresse MAC est codée sur 48 bits : à l’échelle de la planète, on peut avoir…","ctx":null,"opts":["8 adresses MAC pour chaque cm² de surface terrestre","1 adresse MAC pour chaque cm² de surface terrestre","8 adresses MAC pour 100 m² de surface terrestre","1 adresse MAC pour 2 m² de surface terrestre"],"t":40,"final":false},"Q045":{"g":"G93","txt":"Pourquoi le filtrage MAC seul est-il une protection faible ?","ctx":null,"opts":["Les adresses MAC sont chiffrées","Une adresse MAC se copie facilement (usurpation, MAC spoofing)","Un switch ne peut pas lire les adresses MAC","Les adresses MAC changent toutes les heures"],"t":30,"final":false},"Q046":{"g":"G93","txt":"Quelle mesure complète utilement le filtrage MAC sur un réseau filaire ?","ctx":null,"opts":["Un SSID caché pour masquer le réseau Wi-Fi","Un câble réseau plus court entre les postes","802.1X (authentification avant ouverture du port)","Un VLAN natif identique partout sur le réseau"],"t":30,"final":false},"Q047":{"g":"G94","txt":"Sous Windows, quelle commande affiche les adresses MAC de vos cartes réseau ?","ctx":null,"opts":["ping 127.0.0.1","ipconfig /all","tracert localhost","netstat -r"],"t":25,"final":false},"Q048":{"g":"G96","txt":"Quelle commande affiche la table ARP locale de votre PC ?","ctx":null,"opts":["arp -a","ipconfig /release","nslookup -arp","netsh wlan show arp"],"t":25,"final":false},"Q049":{"g":"G101","txt":"Dans le modèle des 3A, quelle étape répond à la question « Que as-tu le droit de faire ? »","ctx":null,"opts":["L’authentification","L’identification","La traçabilité","L’autorisation"],"t":25,"final":false},"Q050":{"g":"G101","txt":"Un badge et un code PIN : de quels facteurs s’agit-il ?","ctx":null,"opts":["Connaissance seulement","Possession et connaissance","Inhérence et possession","Inhérence seulement"],"t":25,"final":false},"Q051":{"g":"G104","txt":"LDAP est…","ctx":null,"opts":["Un annuaire propriétaire édité par Microsoft","Un protocole pour consulter et modifier un annuaire","Un protocole de routage entre les réseaux","Un système de fichiers pour les serveurs"],"t":25,"final":false},"Q052":{"g":"G104","txt":"Pourquoi un annuaire LDAP est-il adapté à l’authentification de milliers d’utilisateurs ?","ctx":null,"opts":["Il est optimisé pour l’écriture massive de données","Il stocke les mots de passe en clair pour aller plus vite","Il remplace le pare-feu et le routeur","Il est optimisé pour la lecture et la recherche rapides"],"t":30,"final":false},"Q053":{"g":"G108","txt":"Quel est le RDN de cette entrée ?","ctx":"dn: uid=mdupont,ou=Gestion,ou=Personnel,dc=translor,dc=fr\nobjectClass: inetOrgPerson\nmail: m.dupont@translor.fr","opts":["dc=fr","ou=Personnel","dc=translor,dc=fr","uid=mdupont"],"t":30,"final":false},"Q054":{"g":"G108","txt":"Quel filtre retrouve tous les inetOrgPerson de l’OU Gestion ?","ctx":"dn: uid=mdupont,ou=Gestion,ou=Personnel,dc=translor,dc=fr\nobjectClass: inetOrgPerson\nmail: m.dupont@translor.fr","opts":["(objectClass=inetOrgPerson)&(ou=Gestion)","(|(objectClass=inetOrgPerson)(ou=Gestion))","(&(objectClass=inetOrgPerson)(ou=Gestion))","&(objectClass=inetOrgPerson,ou=Gestion)"],"t":45,"final":false},"Q055":{"g":"G108","txt":"Quel port utiliser pour un échange LDAP chiffré, et quel compte pour l’application ?","ctx":"dn: uid=mdupont,ou=Gestion,ou=Personnel,dc=translor,dc=fr\nobjectClass: inetOrgPerson\nmail: m.dupont@translor.fr","opts":["389 en clair, avec le compte administrateur","636 (LDAPS), avec un compte de service en lecture seule","636 (LDAPS), avec le compte administrateur du domaine","389 en clair, avec un compte invité anonyme"],"t":40,"final":false},"Q056":{"g":"G116","txt":"Quel composant AD permet de déléguer à un responsable le droit de réinitialiser les mots de passe de la seule comptabilité ?","ctx":null,"opts":["La forêt de l’annuaire","Une unité d’organisation (OU)","Le schéma de l’annuaire","Le catalogue global de la forêt"],"t":30,"final":false},"Q057":{"g":"G116","txt":"Quelle est l’unité de base d’un réseau Active Directory, avec sa propre base d’annuaire ?","ctx":null,"opts":["L’objet","Le site","Le domaine","Le SID"],"t":25,"final":false},"Q058":{"g":"G117","txt":"Quel est l’ordre de la chaîne AGDLP ?","ctx":null,"opts":["Compte → groupe de domaine local → groupe global → permission","Compte → groupe global → groupe de domaine local → permission","Permission → groupe global → groupe local → compte","Groupe global → compte → permission → groupe local"],"t":30,"final":false},"Q059":{"g":"G117","txt":"Pourquoi ne pas donner de droit directement aux comptes ?","ctx":null,"opts":["Parce que Windows interdit les droits individuels","Parce que les groupes chiffrent mieux les permissions","Pour que chaque utilisateur choisisse lui-même ses droits","Un changement de poste = un changement de groupe, pas 40 droits à défaire"],"t":30,"final":false},"Q060":{"g":"G117","txt":"Le stagiaire (lecture seule sur « Litiges clients ») termine son stage. Que faites-vous ?","ctx":null,"opts":["Le retirer du groupe GG_Stagiaires ou désactiver son compte","Supprimer le dossier partagé","Retirer le droit sur chaque fichier un par un","Ne rien faire, le compte expirera un jour"],"t":30,"final":false},"Q061":{"g":"G124","txt":"Que suggèrent les 5 premières lignes (4625 sur « admin » depuis la même IP en 10 secondes) ?","ctx":"1 4625 admin  203.0.113.50 23:01:02\n2 4625 admin  203.0.113.50 23:01:04\n3 4625 admin  203.0.113.50 23:01:07\n4 4625 admin  203.0.113.50 23:01:09\n5 4625 admin  203.0.113.50 23:01:11\n6 4740 (aucun verrouillage)\n7 4624 admin  203.0.113.50 23:01:14","opts":["Une mise à jour Windows qui redémarre le service","Un administrateur qui change son mot de passe","Une attaque par force brute (devinette de mot de passe)","Un scan de ports depuis Internet"],"t":40,"final":false},"Q062":{"g":"G124","txt":"Que prouve la ligne 7 (4624 sur « admin ») ?","ctx":"1 4625 admin  203.0.113.50 23:01:02\n2 4625 admin  203.0.113.50 23:01:04\n3 4625 admin  203.0.113.50 23:01:07\n4 4625 admin  203.0.113.50 23:01:09\n5 4625 admin  203.0.113.50 23:01:11\n6 4740 (aucun verrouillage)\n7 4624 admin  203.0.113.50 23:01:14","opts":["Que l’attaque a échoué : l’accès est refusé","Une ouverture de session réussie : mot de passe probablement deviné","Que le compte a été verrouillé par la politique","Que le serveur a redémarré après l’attaque"],"t":40,"final":false},"Q063":{"g":"G124","txt":"Quelle règle d’alerte est la plus pertinente ?","ctx":"1 4625 admin  203.0.113.50 23:01:02\n2 4625 admin  203.0.113.50 23:01:04\n3 4625 admin  203.0.113.50 23:01:07\n4 4625 admin  203.0.113.50 23:01:09\n5 4625 admin  203.0.113.50 23:01:11\n6 4740 (aucun verrouillage)\n7 4624 admin  203.0.113.50 23:01:14","opts":["Alerte à chaque événement 4624, réussi ou non","Une alerte mensuelle sur les verrouillages 4740","Aucune alerte sur les comptes administrateurs","Alerte si 5 échecs 4625 en 2 min sur un compte, critique si un 4624 suit"],"t":40,"final":false},"Q064":{"g":"G128","txt":"Un compte est supprimé puis recréé avec le même nom. Retrouve-t-il ses anciens droits ?","ctx":null,"opts":["Non : le nouveau compte a un SID différent","Oui, les droits suivent le nom du compte","Oui, grâce au catalogue global","Oui, si le mot de passe est identique"],"t":30,"final":false},"Q065":{"g":"G128","txt":"Qu’est-ce qu’une forêt Active Directory ?","ctx":null,"opts":["Un groupe de postes situés sur un même site","Une sauvegarde complète de l’annuaire","Un ensemble d’arbres et de domaines partageant schéma et catalogue global","Une OU de très grande taille avec ses sous-OU"],"t":30,"final":false},"Q066":{"g":"G131","txt":"Que signifie la lettre G dans AGDLP ?","ctx":null,"opts":["Générique","Gestion","Global (groupe global)","Garde"],"t":20,"final":false},"Q067":{"g":"G131","txt":"Quel événement Windows signale un échec d’ouverture de session ?","ctx":null,"opts":["4624","4740","4732","4625"],"t":20,"final":false},"Q068":{"g":"G131","txt":"Qui doit recevoir les droits sur un dossier partagé ?","ctx":null,"opts":["Chaque utilisateur","Un groupe de domaine local","Le groupe Tout le monde","Le compte administrateur"],"t":20,"final":false},"Q069":{"g":"G138","txt":"Poste de l’OU Entrepôt à Nancy : USB autorisées ou interdites ?","ctx":"GPO Local : clés USB autorisées\nGPO du site de Nancy : clés USB interdites\nGPO du domaine : BitLocker obligatoire\nGPO de l’OU Entrepôt : clés USB autorisées","opts":["Autorisées : l’OU est appliquée en dernier","Interdites : le site l’emporte","Interdites : le domaine l’emporte","Impossible à déterminer"],"t":40,"final":false},"Q070":{"g":"G138","txt":"Poste de l’OU Comptabilité à Nancy (cette OU ne définit rien sur les USB) : USB autorisées ou interdites ?","ctx":"GPO Local : clés USB autorisées\nGPO du site de Nancy : clés USB interdites\nGPO du domaine : BitLocker obligatoire\nGPO de l’OU Entrepôt : clés USB autorisées","opts":["Autorisées : le local est prioritaire","Interdites : le réglage du site de Nancy reste en vigueur","Autorisées : une OU sans GPO annule le site","Interdites : par la GPO du domaine"],"t":40,"final":false},"Q071":{"g":"G138","txt":"Comment empêcher une OU d’annuler un réglage essentiel du domaine ?","ctx":"GPO Local : clés USB autorisées\nGPO du site de Nancy : clés USB interdites\nGPO du domaine : BitLocker obligatoire\nGPO de l’OU Entrepôt : clés USB autorisées","opts":["Supprimer l’OU concernée de l’annuaire","Placer la GPO du domaine en premier dans l’ordre LSDOU","Activer l’option « Appliqué » (Enforced) sur le lien de la GPO du domaine","Donner le contrôle total de l’OU aux administrateurs locaux"],"t":30,"final":false},"Q072":{"g":"G144","txt":"802.1X contrôle l’accès…","ctx":null,"opts":["Par port, avant d’ouvrir le réseau","Par adresse IP source","Seulement au niveau de l’application","Seulement pour le Wi-Fi invité"],"t":20,"final":false},"Q073":{"g":"G144","txt":"802.1X est une norme…","ctx":null,"opts":["IETF","IEEE","ISO 27001","ANSSI"],"t":20,"final":false},"Q074":{"g":"G144","txt":"Avant authentification, un port 802.1X laisse passer…","ctx":null,"opts":["Tout le trafic, filtré ensuite par les ACL","Rien, pas même le trafic d’authentification","Seulement le trafic DNS et DHCP","Seulement le trafic d’authentification (EAPOL)"],"t":25,"final":false},"Q075":{"g":"G148","txt":"Une tablette se connecte au Wi-Fi via une borne et un serveur RADIUS. Quels sont les rôles dans l’ordre (tablette, borne, serveur) ?","ctx":null,"opts":["Authenticator, supplicant, serveur d’authentification","Serveur d’authentification, supplicant, authenticator","Supplicant, serveur d’authentification, authenticator","Supplicant, authenticator, serveur d’authentification"],"t":30,"final":false},"Q076":{"g":"G148","txt":"Comment affecter automatiquement les tablettes au VLAN 40 ?","ctx":null,"opts":["La borne devine le VLAN d’après l’adresse MAC","La tablette choisit son VLAN","Le serveur renvoie l’attribut de VLAN dans l’Access-Accept","Un administrateur change le VLAN à la main à chaque connexion"],"t":30,"final":false},"Q077":{"g":"G153","txt":"Quelle méthode EAP utilise des certificats des deux côtés (authentification mutuelle) ?","ctx":null,"opts":["PEAP-MSCHAPv2","EAP-TTLS avec PAP","EAP-TLS","EAP-MD5"],"t":30,"final":false},"Q078":{"g":"G153","txt":"EAP est…","ctx":null,"opts":["Un protocole de chiffrement des trames Wi-Fi","Un cadre qui transporte des méthodes d’authentification","Un annuaire d’entreprise pour les certificats","Une méthode d’authentification unique par mot de passe"],"t":25,"final":false},"Q079":{"g":"G154","txt":"Pour 60 tablettes gérées par un MDM, avec une PKI interne possible, quelle méthode EAP choisir ?","ctx":null,"opts":["PEAP-MSCHAPv2 avec un mot de passe partagé","EAP-TLS : certificat poussé par le MDM, aucun mot de passe","Clé Wi-Fi partagée (WPA2-Personnel) pour toutes les tablettes","Aucune authentification, filtrage MAC seulement"],"t":30,"final":false},"Q080":{"g":"G154","txt":"Quel risque si le client ne vérifie pas le certificat du serveur (PEAP) ?","ctx":null,"opts":["Le Wi-Fi devient plus lent","Les certificats expirent plus vite","Un faux point d’accès capte les identifiants","Aucun, le mot de passe est chiffré"],"t":30,"final":false},"Q081":{"g":"G158","txt":"Sur quels ports UDP RADIUS fonctionne-t-il (authentification / comptabilité) ?","ctx":null,"opts":["389 / 636","88 / 464","443 / 8443","1812 / 1813"],"t":30,"final":false},"Q082":{"g":"G158","txt":"Dans RADIUS, que désigne « NAS » (Network Access Server) ?","ctx":null,"opts":["Le serveur de fichiers qui stocke les comptes","La base d’identités qui contient les utilisateurs","Le client RADIUS qui relaie la demande (switch, borne, VPN)","Le poste de l’utilisateur qui demande l’accès"],"t":30,"final":false},"Q083":{"g":"G159","txt":"Quelle ligne montre un problème de certificat, et quelle action ?","ctx":"1 Access-Accept  T-014   cert OK    VLAN 40\n2 Access-Reject  T-033   cert expiré\n3 Access-Accept  m.dupont  EAP OK   VLAN 10\n4 Access-Reject  inconnu  compte absent","opts":["Ligne 4 : créer le compte « inconnu » dans l’annuaire","Ligne 2 : renouveler le certificat via le MDM","Ligne 1 : révoquer le certificat de la tablette T-014","Ligne 3 : changer le VLAN de m.dupont"],"t":40,"final":false},"Q084":{"g":"G159","txt":"Quel VLAN reçoit la ligne 3 (m.dupont) ?","ctx":"1 Access-Accept  T-014   cert OK    VLAN 40\n2 Access-Reject  T-033   cert expiré\n3 Access-Accept  m.dupont  EAP OK   VLAN 10\n4 Access-Reject  inconnu  compte absent","opts":["VLAN 40, comme les tablettes du quai","VLAN 10, renvoyé dans l’Access-Accept","Aucun : l’accès est refusé","VLAN 1 par défaut, faute d’attribut"],"t":30,"final":false},"Q085":{"g":"G159","txt":"Quel indicateur suivre dans le temps ?","ctx":"1 Access-Accept  T-014   cert OK    VLAN 40\n2 Access-Reject  T-033   cert expiré\n3 Access-Accept  m.dupont  EAP OK   VLAN 10\n4 Access-Reject  inconnu  compte absent","opts":["Le nombre de câbles réseau","La taille du fichier de journal","La vitesse moyenne des tablettes","Le taux de rejets par cause"],"t":30,"final":false},"Q086":{"g":"G164","txt":"Quel est l’ordre correct des échanges ?","ctx":"A. Le client présente son TGT au TGS et demande un ticket pour le service « fichiers »\nB. Le client demande un TGT à l’AS en s’identifiant\nC. Le client présente le ticket de service au serveur de fichiers\nD. Le TGS renvoie un ticket de service\nE. L’AS renvoie un TGT chiffré avec une clé dérivée du mot de passe\nF. Le serveur de fichiers vérifie le ticket et ouvre l’accès","opts":["B, A, E, D, C, F","A, B, D, E, C, F","B, E, D, A, C, F","B, E, A, D, C, F"],"t":60,"final":false},"Q087":{"g":"G164","txt":"Le mot de passe d’Alice circule-t-il sur le réseau pendant l’authentification Kerberos ?","ctx":null,"opts":["Non : il sert à dériver une clé qui déchiffre la réponse","Oui, en clair vers le TGS à chaque demande","Oui, chiffré vers le serveur de fichiers","Oui, une fois par heure vers l’AS"],"t":30,"final":false},"Q088":{"g":"G164","txt":"L’horloge d’un poste a 10 minutes d’écart. Que se passe-t-il ?","ctx":null,"opts":["L’authentification échoue : Kerberos tolère 5 minutes par défaut","Rien, les tickets n’ont pas d’horodatage","Le ticket est valable 10 minutes de plus","Le poste est automatiquement resynchronisé par le TGS"],"t":30,"final":false},"Q089":{"g":"G170","txt":"Quel protocole envoie identifiant et mot de passe en clair ?","ctx":null,"opts":["CHAP","PAP","Kerberos","EAP-TLS"],"t":20,"final":false},"Q090":{"g":"G170","txt":"Quel protocole est conçu pour contrôler et journaliser les commandes tapées par les administrateurs sur les équipements réseau ?","ctx":null,"opts":["TACACS+","CHAP","SAML","RADIUS (comptabilité)"],"t":30,"final":false},"Q091":{"g":"G171","txt":"Une session Windows ouverte donne accès aux partages sans retaper le mot de passe. Quel protocole ?","ctx":null,"opts":["OAuth2","SAML","Kerberos","CHAP"],"t":25,"final":false},"Q092":{"g":"G171","txt":"Un clic ouvre le logiciel RH en ligne depuis l’annuaire de l’entreprise (SSO fédéré). Quel protocole ?","ctx":null,"opts":["SAML","Kerberos","PAP","TACACS+"],"t":25,"final":false},"Q093":{"g":"G171","txt":"Un ancien équipement envoie identifiant et mot de passe en clair. Quel protocole retirer en priorité ?","ctx":null,"opts":["Kerberos","PAP","EAP-TLS","SAML"],"t":25,"final":false},"Q094":{"g":"G178","txt":"Quelle est la longueur minimale préconisée pour un mot de passe mêlant lettres, chiffres et caractères spéciaux ?","ctx":null,"opts":["8 caractères","6 caractères","12 caractères","4 caractères"],"t":25,"final":false},"Q095":{"g":"G182","txt":"Quel algorithme et quel sel pour cette ligne ?","ctx":"mdupont:$6$Xk2d9a$Qw8...(hash)...:19800:0:90:7:::","opts":["SHA-512 ($6$), sel : Xk2d9a","MD5 ($1$), sel : Qw8","bcrypt ($2$), sel : mdupont","SHA-512 ($6$), sel : 19800"],"t":35,"final":false},"Q096":{"g":"G182","txt":"Au bout de combien de jours le mot de passe doit-il être changé et quand l’utilisateur est-il prévenu ?","ctx":"mdupont:$6$Xk2d9a$Qw8...(hash)...:19800:0:90:7:::","opts":["Minimum 90 jours, avertissement 19800 jours avant","Maximum 7 jours, avertissement 90 jours avant","Maximum 90 jours, avertissement 7 jours avant","Maximum 0 jour, sans avertissement"],"t":40,"final":false},"Q097":{"g":"G182","txt":"Deux comptes ont le même mot de passe : verra-t-on le même hash dans /etc/shadow ?","ctx":"mdupont:$6$Xk2d9a$Qw8...(hash)...:19800:0:90:7:::","opts":["Non : sels différents, donc hashs différents","Oui : le hash ne dépend que du mot de passe","Oui, sauf pour le compte root","Non : le fichier /etc/shadow est chiffré en entier"],"t":30,"final":false},"Q098":{"g":"G189","txt":"Durée maximale de l’attaque sur le mot de passe A (26^8 ≈ 2,1 × 10^11 combinaisons) ?","ctx":"Attaquant hors ligne : 10^10 essais par seconde\nA : 8 lettres minuscules (26 symboles)\nB : 12 caractères parmi 94 symboles\nC : phrase de 5 mots tirés d’une liste de 7 776 mots","opts":["Environ 21 jours","Environ 21 ans","Moins d’une milliseconde","Environ 21 secondes"],"t":45,"final":false},"Q099":{"g":"G189","txt":"Classez les politiques de la plus faible à la plus robuste.","ctx":"Attaquant hors ligne : 10^10 essais par seconde\nA : 8 lettres minuscules (26 symboles)\nB : 12 caractères parmi 94 symboles\nC : phrase de 5 mots tirés d’une liste de 7 776 mots","opts":["A, puis C (≈ 90 ans), puis B (≈ 1,5 million d’années)","B (≈ 1,5 million d’années), puis C, puis A","C (≈ 90 ans), puis A, puis B","A, puis B (≈ 1,5 million d’années), puis C"],"t":60,"final":false},"Q100":{"g":"G189","txt":"Quelle règle de mot de passe imposer à TransLor ?","ctx":"Attaquant hors ligne : 10^10 essais par seconde\nA : 8 lettres minuscules (26 symboles)\nB : 12 caractères parmi 94 symboles\nC : phrase de 5 mots tirés d’une liste de 7 776 mots","opts":["Longueur minimale 14 ou phrase de passe, avec un hash lent et salé","8 caractères avec une majuscule et un chiffre","Changement obligatoire toutes les semaines","Un mot de passe unique pour tous les serveurs"],"t":40,"final":false},"Q101":{"g":"G196","txt":"Le sel est…","ctx":null,"opts":["Secret, conservé hors de la base de données","Public, stocké avec le hash, unique par utilisateur","Une clé de chiffrement symétrique des mots de passe","Identique pour toute l’application et tous les comptes"],"t":25,"final":false},"Q102":{"g":"G196","txt":"Le poivre est…","ctx":null,"opts":["Stocké à côté du hash","Identique au sel","Différent à chaque connexion","Un secret conservé hors de la base"],"t":25,"final":false},"Q103":{"g":"G196","txt":"Une rainbow table est inefficace contre…","ctx":null,"opts":["Un hash non salé","Un mot de passe de 4 caractères","Un hash MD5 sans sel","Un hash salé"],"t":25,"final":false},"Q104":{"g":"G199","txt":"Une rainbow table est un compromis entre…","ctx":null,"opts":["La sécurité et la vitesse du réseau","Le chiffrement et la compression","Le temps de calcul et l’espace de stockage","Le sel et le poivre"],"t":30,"final":false},"Q105":{"g":"G199","txt":"À quoi sert la fonction de réduction dans une chaîne d’une rainbow table ?","ctx":null,"opts":["Compresser le fichier de la table pour gagner de la place","Transformer un hash en un nouveau mot de passe candidat","Chiffrer le mot de passe avant de le hacher","Supprimer le sel du hash avant la recherche"],"t":30,"final":false},"Q106":{"g":"G202","txt":"Si casser le mot de passe a une probabilité de 0,001 et casser le second facteur (SMS) aussi, indépendamment, quelle est la probabilité de casser les deux ?","ctx":null,"opts":["10⁻⁶","0,002","0,001","10⁻³ × 2"],"t":40,"final":false},"Q107":{"g":"G207","txt":"Mot de passe + code PIN : est-ce de l’authentification multifacteur ?","ctx":null,"opts":["Non : ce sont deux facteurs de connaissance","Oui, ce sont deux preuves","Oui, si le PIN est de 6 chiffres","Oui, si le mot de passe est long"],"t":30,"final":false},"Q108":{"g":"G207","txt":"Une empreinte digitale est un facteur…","ctx":null,"opts":["De possession (ce que l’on a)","De connaissance (ce que l’on sait)","D’inhérence (ce que l’on est)","De localisation (où l’on est)"],"t":20,"final":false},"Q109":{"g":"G209","txt":"Quel facteur choisir pour les 6 administrateurs (accès aux serveurs et à l’AD) ?","ctx":null,"opts":["SMS sur le téléphone personnel","Question secrète en plus du mot de passe","Aucun : les administrateurs sont de confiance","Clé FIDO2 (deux par personne)"],"t":30,"final":false},"Q110":{"g":"G209","txt":"Quelle faiblesse principale du SMS comme second facteur ?","ctx":null,"opts":["SIM swap et interception","Il est trop lent à saisir","Il consomme trop de batterie","Il nécessite une PKI"],"t":30,"final":false},"Q111":{"g":"G209","txt":"Quelle population traiter en premier dans un déploiement MFA par vagues ?","ctx":null,"opts":["Les conducteurs (60 tablettes) d’abord","Les invités du Wi-Fi d’abord","Tous en même temps, le premier jour","Les administrateurs, puis l’accès VPN"],"t":30,"final":false},"Q112":{"g":"G213","txt":"FIDO2 combine…","ctx":null,"opts":["WebAuthn (W3C) côté navigateur et CTAP côté clé","TLS côté serveur et IPsec côté poste","LDAP côté annuaire et Kerberos côté poste","RADIUS côté réseau et TACACS+ côté équipement"],"t":30,"final":false},"Q113":{"g":"G213","txt":"Pourquoi une clé FIDO2 résiste-t-elle à l’hameçonnage ?","ctx":null,"opts":["Elle chiffre le mot de passe avant son envoi au site","Elle vérifie le site : un faux site n’obtient pas de réponse valable","Elle bloque la réception des courriels frauduleux","Elle impose un mot de passe plus long à l’utilisateur"],"t":30,"final":false},"Q114":{"g":"G214","txt":"Un second facteur s’ajoute à…","ctx":null,"opts":["Une preuve d’une autre nature (possession, biométrie)","Un autre mot de passe plus long que le premier","Un code PIN identique pour tous les comptes","Une question secrète à laquelle on répond par écrit"],"t":25,"final":false},"Q115":{"g":"G214","txt":"Un code TOTP change en général toutes les…","ctx":null,"opts":["24 heures","30 secondes","Semaines","Jamais"],"t":20,"final":false},"Q116":{"g":"G214","txt":"Le facteur le plus résistant à l’hameçonnage ?","ctx":null,"opts":["SMS","Clé FIDO2","Code TOTP","Notification push sans validation"],"t":20,"final":false},"Q117":{"g":"G220","txt":"Un conducteur quitte l’entreprise vendredi. Que faire de son compte et quand ?","ctx":null,"opts":["Le laisser actif un mois au cas où","Le supprimer le lundi suivant, sans archivage","Le désactiver le jour même, récupérer matériel et clés","Changer seulement son mot de passe"],"t":30,"final":false},"Q118":{"g":"G220","txt":"Un gestionnaire passe à la comptabilité. Que faire de ses droits ?","ctx":null,"opts":["Retirer les anciens groupes et ajouter les nouveaux","Ajouter les nouveaux groupes sans retirer les anciens","Ne rien changer, le poste n’influe pas sur les droits","Créer un nouveau compte et garder l’ancien"],"t":30,"final":false},"Q119":{"g":"G220","txt":"Un prestataire intervient 3 mois. Quelle bonne pratique ?","ctx":null,"opts":["Utiliser un compte partagé existant","Un compte sans date de fin","Un compte avec date de fin automatique","Lui donner les droits de l’administrateur"],"t":30,"final":false},"Q120":{"g":"G225","txt":"Quelle est la différence entre IAM et IGA ?","ctx":null,"opts":["IAM gère identités et accès ; IGA ajoute revues, workflows, preuves","IAM concerne le Wi-Fi, IGA concerne le filaire","IAM est un logiciel gratuit, IGA est payant","Il n’y a aucune différence entre les deux"],"t":30,"final":false},"Q121":{"g":"G225","txt":"Que signifie « joiner, mover, leaver » ?","ctx":null,"opts":["Trois niveaux de privilège sur un système","Trois modes de fonctionnement du VTP","Arrivée, mutation, départ des personnes","Trois types de pare-feu applicatifs"],"t":25,"final":false},"Q122":{"g":"G225","txt":"Quelle preuve conserver pour un audit des droits ?","ctx":null,"opts":["Une capture d’écran de la page d’accueil","Le mot de passe des administrateurs","Rien, la mémoire suffit","La revue trimestrielle signée par chaque manager"],"t":30,"final":false},"Q123":{"g":"G226","txt":"Quel constat est à traiter dès la vague 1 (critique, gain rapide) ?","ctx":"1 Compte « admin » partagé au quai\n2 Aucun MFA sur le VPN\n3 Réseau à plat, Wi-Fi invités compris\n4 TMS historique : mots de passe en MD5 sans sel\n5 Droits au cas par cas, jamais revus\n6 12 comptes d’anciens salariés toujours actifs\n7 Wi-Fi des tablettes protégé par une clé partagée","opts":["Le 3 : refaire tout le plan VLAN en 1 semaine","Le 2 : MFA sur le VPN, administrateurs d’abord","Le 7 : déployer EAP-TLS partout immédiatement","Le 5 : revue complète de tous les droits"],"t":40,"final":false},"Q124":{"g":"G226","txt":"Quelle mesure pour le constat 4 (MD5 sans sel) ?","ctx":"1 Compte « admin » partagé au quai\n2 Aucun MFA sur le VPN\n3 Réseau à plat, Wi-Fi invités compris\n4 TMS historique : mots de passe en MD5 sans sel\n5 Droits au cas par cas, jamais revus\n6 12 comptes d’anciens salariés toujours actifs\n7 Wi-Fi des tablettes protégé par une clé partagée","opts":["Allonger la durée de vie des mots de passe","Ajouter un second MD5","Migrer vers des hashs lents et salés (Argon2, bcrypt)","Interdire les mots de passe de plus de 8 caractères"],"t":40,"final":false},"Q125":{"g":"G226","txt":"Quelle mesure traite à la fois le constat 5 et le constat 6 ?","ctx":"1 Compte « admin » partagé au quai\n2 Aucun MFA sur le VPN\n3 Réseau à plat, Wi-Fi invités compris\n4 TMS historique : mots de passe en MD5 sans sel\n5 Droits au cas par cas, jamais revus\n6 12 comptes d’anciens salariés toujours actifs\n7 Wi-Fi des tablettes protégé par une clé partagée","opts":["La revue périodique des droits et des comptes (recertification)","Un pare-feu applicatif devant le TMS","Un second VLAN invités pour le Wi-Fi","Un mot de passe plus long pour l’administrateur"],"t":40,"final":false},"Q126":{"g":"G228","txt":"Dans 802.1X, qui prend la décision d’accorder l’accès ?","ctx":null,"opts":["Le supplicant (le poste qui demande l’accès)","Le serveur d’authentification (RADIUS)","L’authenticator (le switch ou la borne Wi-Fi)","Le serveur DHCP du VLAN concerné"],"t":30,"final":true},"Q127":{"g":"G228","txt":"Un attaquant branché sur un port access du VLAN natif envoie une trame à double tag vers un autre VLAN. Quelle mesure est la plus efficace ?","ctx":null,"opts":["Un mot de passe plus long sur le switch","Passer tous les ports du switch en trunk","Un native VLAN dédié inutilisé et la liste de VLAN autorisés","Désactiver le filtrage MAC sur les ports"],"t":40,"final":true},"Q128":{"g":"G228","txt":"La base du TMS (MD5 sans sel) fuite. Quelle est la conséquence la plus probable ?","ctx":null,"opts":["Aucune, MD5 est irréversible","Seuls les administrateurs sont touchés","Les mots de passe sont inutilisables ailleurs","La plupart des mots de passe sont retrouvés rapidement"],"t":40,"final":true},"Q129":{"g":"G228","txt":"Quelle combinaison protège le mieux le compte d’un administrateur ?","ctx":null,"opts":["Un compte partagé et un mot de passe long","Un compte nominatif et un SMS","Un compte partagé et un code PIN","Un compte nominatif et une clé FIDO2"],"t":40,"final":true}}};</script><script>AC.ENC={"salt":"Ddqfushf2PiU/TmypjXY0A==","iv":"7gs+Rb1Q4eCA0Y+c","ct":"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","it":200000};</script><script>//---------------------------------------------------------------------
+//
+// QR Code Generator for JavaScript
+//
+// Copyright (c) 2009 Kazuhiko Arase
+//
+// URL: http://www.d-project.com/
+//
+// Licensed under the MIT license:
+//  http://www.opensource.org/licenses/mit-license.php
+//
+// The word 'QR Code' is registered trademark of
+// DENSO WAVE INCORPORATED
+//  http://www.denso-wave.com/qrcode/faqpatent-e.html
+//
+//---------------------------------------------------------------------
+
+var qrcode = function() {
+
+  //---------------------------------------------------------------------
+  // qrcode
+  //---------------------------------------------------------------------
+
+  /**
+   * qrcode
+   * @param typeNumber 1 to 40
+   * @param errorCorrectionLevel 'L','M','Q','H'
+   */
+  var qrcode = function(typeNumber, errorCorrectionLevel) {
+
+    var PAD0 = 0xEC;
+    var PAD1 = 0x11;
+
+    var _typeNumber = typeNumber;
+    var _errorCorrectionLevel = QRErrorCorrectionLevel[errorCorrectionLevel];
+    var _modules = null;
+    var _moduleCount = 0;
+    var _dataCache = null;
+    var _dataList = [];
+
+    var _this = {};
+
+    var makeImpl = function(test, maskPattern) {
+
+      _moduleCount = _typeNumber * 4 + 17;
+      _modules = function(moduleCount) {
+        var modules = new Array(moduleCount);
+        for (var row = 0; row < moduleCount; row += 1) {
+          modules[row] = new Array(moduleCount);
+          for (var col = 0; col < moduleCount; col += 1) {
+            modules[row][col] = null;
+          }
+        }
+        return modules;
+      }(_moduleCount);
+
+      setupPositionProbePattern(0, 0);
+      setupPositionProbePattern(_moduleCount - 7, 0);
+      setupPositionProbePattern(0, _moduleCount - 7);
+      setupPositionAdjustPattern();
+      setupTimingPattern();
+      setupTypeInfo(test, maskPattern);
+
+      if (_typeNumber >= 7) {
+        setupTypeNumber(test);
+      }
+
+      if (_dataCache == null) {
+        _dataCache = createData(_typeNumber, _errorCorrectionLevel, _dataList);
+      }
+
+      mapData(_dataCache, maskPattern);
+    };
+
+    var setupPositionProbePattern = function(row, col) {
+
+      for (var r = -1; r <= 7; r += 1) {
+
+        if (row + r <= -1 || _moduleCount <= row + r) continue;
+
+        for (var c = -1; c <= 7; c += 1) {
+
+          if (col + c <= -1 || _moduleCount <= col + c) continue;
+
+          if ( (0 <= r && r <= 6 && (c == 0 || c == 6) )
+              || (0 <= c && c <= 6 && (r == 0 || r == 6) )
+              || (2 <= r && r <= 4 && 2 <= c && c <= 4) ) {
+            _modules[row + r][col + c] = true;
+          } else {
+            _modules[row + r][col + c] = false;
+          }
+        }
+      }
+    };
+
+    var getBestMaskPattern = function() {
+
+      var minLostPoint = 0;
+      var pattern = 0;
+
+      for (var i = 0; i < 8; i += 1) {
+
+        makeImpl(true, i);
+
+        var lostPoint = QRUtil.getLostPoint(_this);
+
+        if (i == 0 || minLostPoint > lostPoint) {
+          minLostPoint = lostPoint;
+          pattern = i;
+        }
+      }
+
+      return pattern;
+    };
+
+    var setupTimingPattern = function() {
+
+      for (var r = 8; r < _moduleCount - 8; r += 1) {
+        if (_modules[r][6] != null) {
+          continue;
+        }
+        _modules[r][6] = (r % 2 == 0);
+      }
+
+      for (var c = 8; c < _moduleCount - 8; c += 1) {
+        if (_modules[6][c] != null) {
+          continue;
+        }
+        _modules[6][c] = (c % 2 == 0);
+      }
+    };
+
+    var setupPositionAdjustPattern = function() {
+
+      var pos = QRUtil.getPatternPosition(_typeNumber);
+
+      for (var i = 0; i < pos.length; i += 1) {
+
+        for (var j = 0; j < pos.length; j += 1) {
+
+          var row = pos[i];
+          var col = pos[j];
+
+          if (_modules[row][col] != null) {
+            continue;
+          }
+
+          for (var r = -2; r <= 2; r += 1) {
+
+            for (var c = -2; c <= 2; c += 1) {
+
+              if (r == -2 || r == 2 || c == -2 || c == 2
+                  || (r == 0 && c == 0) ) {
+                _modules[row + r][col + c] = true;
+              } else {
+                _modules[row + r][col + c] = false;
+              }
+            }
+          }
+        }
+      }
+    };
+
+    var setupTypeNumber = function(test) {
+
+      var bits = QRUtil.getBCHTypeNumber(_typeNumber);
+
+      for (var i = 0; i < 18; i += 1) {
+        var mod = (!test && ( (bits >> i) & 1) == 1);
+        _modules[Math.floor(i / 3)][i % 3 + _moduleCount - 8 - 3] = mod;
+      }
+
+      for (var i = 0; i < 18; i += 1) {
+        var mod = (!test && ( (bits >> i) & 1) == 1);
+        _modules[i % 3 + _moduleCount - 8 - 3][Math.floor(i / 3)] = mod;
+      }
+    };
+
+    var setupTypeInfo = function(test, maskPattern) {
+
+      var data = (_errorCorrectionLevel << 3) | maskPattern;
+      var bits = QRUtil.getBCHTypeInfo(data);
+
+      // vertical
+      for (var i = 0; i < 15; i += 1) {
+
+        var mod = (!test && ( (bits >> i) & 1) == 1);
+
+        if (i < 6) {
+          _modules[i][8] = mod;
+        } else if (i < 8) {
+          _modules[i + 1][8] = mod;
+        } else {
+          _modules[_moduleCount - 15 + i][8] = mod;
+        }
+      }
+
+      // horizontal
+      for (var i = 0; i < 15; i += 1) {
+
+        var mod = (!test && ( (bits >> i) & 1) == 1);
+
+        if (i < 8) {
+          _modules[8][_moduleCount - i - 1] = mod;
+        } else if (i < 9) {
+          _modules[8][15 - i - 1 + 1] = mod;
+        } else {
+          _modules[8][15 - i - 1] = mod;
+        }
+      }
+
+      // fixed module
+      _modules[_moduleCount - 8][8] = (!test);
+    };
+
+    var mapData = function(data, maskPattern) {
+
+      var inc = -1;
+      var row = _moduleCount - 1;
+      var bitIndex = 7;
+      var byteIndex = 0;
+      var maskFunc = QRUtil.getMaskFunction(maskPattern);
+
+      for (var col = _moduleCount - 1; col > 0; col -= 2) {
+
+        if (col == 6) col -= 1;
+
+        while (true) {
+
+          for (var c = 0; c < 2; c += 1) {
+
+            if (_modules[row][col - c] == null) {
+
+              var dark = false;
+
+              if (byteIndex < data.length) {
+                dark = ( ( (data[byteIndex] >>> bitIndex) & 1) == 1);
+              }
+
+              var mask = maskFunc(row, col - c);
+
+              if (mask) {
+                dark = !dark;
+              }
+
+              _modules[row][col - c] = dark;
+              bitIndex -= 1;
+
+              if (bitIndex == -1) {
+                byteIndex += 1;
+                bitIndex = 7;
+              }
+            }
+          }
+
+          row += inc;
+
+          if (row < 0 || _moduleCount <= row) {
+            row -= inc;
+            inc = -inc;
+            break;
+          }
+        }
+      }
+    };
+
+    var createBytes = function(buffer, rsBlocks) {
+
+      var offset = 0;
+
+      var maxDcCount = 0;
+      var maxEcCount = 0;
+
+      var dcdata = new Array(rsBlocks.length);
+      var ecdata = new Array(rsBlocks.length);
+
+      for (var r = 0; r < rsBlocks.length; r += 1) {
+
+        var dcCount = rsBlocks[r].dataCount;
+        var ecCount = rsBlocks[r].totalCount - dcCount;
+
+        maxDcCount = Math.max(maxDcCount, dcCount);
+        maxEcCount = Math.max(maxEcCount, ecCount);
+
+        dcdata[r] = new Array(dcCount);
+
+        for (var i = 0; i < dcdata[r].length; i += 1) {
+          dcdata[r][i] = 0xff & buffer.getBuffer()[i + offset];
+        }
+        offset += dcCount;
+
+        var rsPoly = QRUtil.getErrorCorrectPolynomial(ecCount);
+        var rawPoly = qrPolynomial(dcdata[r], rsPoly.getLength() - 1);
+
+        var modPoly = rawPoly.mod(rsPoly);
+        ecdata[r] = new Array(rsPoly.getLength() - 1);
+        for (var i = 0; i < ecdata[r].length; i += 1) {
+          var modIndex = i + modPoly.getLength() - ecdata[r].length;
+          ecdata[r][i] = (modIndex >= 0)? modPoly.getAt(modIndex) : 0;
+        }
+      }
+
+      var totalCodeCount = 0;
+      for (var i = 0; i < rsBlocks.length; i += 1) {
+        totalCodeCount += rsBlocks[i].totalCount;
+      }
+
+      var data = new Array(totalCodeCount);
+      var index = 0;
+
+      for (var i = 0; i < maxDcCount; i += 1) {
+        for (var r = 0; r < rsBlocks.length; r += 1) {
+          if (i < dcdata[r].length) {
+            data[index] = dcdata[r][i];
+            index += 1;
+          }
+        }
+      }
+
+      for (var i = 0; i < maxEcCount; i += 1) {
+        for (var r = 0; r < rsBlocks.length; r += 1) {
+          if (i < ecdata[r].length) {
+            data[index] = ecdata[r][i];
+            index += 1;
+          }
+        }
+      }
+
+      return data;
+    };
+
+    var createData = function(typeNumber, errorCorrectionLevel, dataList) {
+
+      var rsBlocks = QRRSBlock.getRSBlocks(typeNumber, errorCorrectionLevel);
+
+      var buffer = qrBitBuffer();
+
+      for (var i = 0; i < dataList.length; i += 1) {
+        var data = dataList[i];
+        buffer.put(data.getMode(), 4);
+        buffer.put(data.getLength(), QRUtil.getLengthInBits(data.getMode(), typeNumber) );
+        data.write(buffer);
+      }
+
+      // calc num max data.
+      var totalDataCount = 0;
+      for (var i = 0; i < rsBlocks.length; i += 1) {
+        totalDataCount += rsBlocks[i].dataCount;
+      }
+
+      if (buffer.getLengthInBits() > totalDataCount * 8) {
+        throw 'code length overflow. ('
+          + buffer.getLengthInBits()
+          + '>'
+          + totalDataCount * 8
+          + ')';
+      }
+
+      // end code
+      if (buffer.getLengthInBits() + 4 <= totalDataCount * 8) {
+        buffer.put(0, 4);
+      }
+
+      // padding
+      while (buffer.getLengthInBits() % 8 != 0) {
+        buffer.putBit(false);
+      }
+
+      // padding
+      while (true) {
+
+        if (buffer.getLengthInBits() >= totalDataCount * 8) {
+          break;
+        }
+        buffer.put(PAD0, 8);
+
+        if (buffer.getLengthInBits() >= totalDataCount * 8) {
+          break;
+        }
+        buffer.put(PAD1, 8);
+      }
+
+      return createBytes(buffer, rsBlocks);
+    };
+
+    _this.addData = function(data, mode) {
+
+      mode = mode || 'Byte';
+
+      var newData = null;
+
+      switch(mode) {
+      case 'Numeric' :
+        newData = qrNumber(data);
+        break;
+      case 'Alphanumeric' :
+        newData = qrAlphaNum(data);
+        break;
+      case 'Byte' :
+        newData = qr8BitByte(data);
+        break;
+      case 'Kanji' :
+        newData = qrKanji(data);
+        break;
+      default :
+        throw 'mode:' + mode;
+      }
+
+      _dataList.push(newData);
+      _dataCache = null;
+    };
+
+    _this.isDark = function(row, col) {
+      if (row < 0 || _moduleCount <= row || col < 0 || _moduleCount <= col) {
+        throw row + ',' + col;
+      }
+      return _modules[row][col];
+    };
+
+    _this.getModuleCount = function() {
+      return _moduleCount;
+    };
+
+    _this.make = function() {
+      if (_typeNumber < 1) {
+        var typeNumber = 1;
+
+        for (; typeNumber < 40; typeNumber++) {
+          var rsBlocks = QRRSBlock.getRSBlocks(typeNumber, _errorCorrectionLevel);
+          var buffer = qrBitBuffer();
+
+          for (var i = 0; i < _dataList.length; i++) {
+            var data = _dataList[i];
+            buffer.put(data.getMode(), 4);
+            buffer.put(data.getLength(), QRUtil.getLengthInBits(data.getMode(), typeNumber) );
+            data.write(buffer);
+          }
+
+          var totalDataCount = 0;
+          for (var i = 0; i < rsBlocks.length; i++) {
+            totalDataCount += rsBlocks[i].dataCount;
+          }
+
+          if (buffer.getLengthInBits() <= totalDataCount * 8) {
+            break;
+          }
+        }
+
+        _typeNumber = typeNumber;
+      }
+
+      makeImpl(false, getBestMaskPattern() );
+    };
+
+    _this.createTableTag = function(cellSize, margin) {
+
+      cellSize = cellSize || 2;
+      margin = (typeof margin == 'undefined')? cellSize * 4 : margin;
+
+      var qrHtml = '';
+
+      qrHtml += '<table style="';
+      qrHtml += ' border-width: 0px; border-style: none;';
+      qrHtml += ' border-collapse: collapse;';
+      qrHtml += ' padding: 0px; margin: ' + margin + 'px;';
+      qrHtml += '">';
+      qrHtml += '<tbody>';
+
+      for (var r = 0; r < _this.getModuleCount(); r += 1) {
+
+        qrHtml += '<tr>';
+
+        for (var c = 0; c < _this.getModuleCount(); c += 1) {
+          qrHtml += '<td style="';
+          qrHtml += ' border-width: 0px; border-style: none;';
+          qrHtml += ' border-collapse: collapse;';
+          qrHtml += ' padding: 0px; margin: 0px;';
+          qrHtml += ' width: ' + cellSize + 'px;';
+          qrHtml += ' height: ' + cellSize + 'px;';
+          qrHtml += ' background-color: ';
+          qrHtml += _this.isDark(r, c)? '#000000' : '#ffffff';
+          qrHtml += ';';
+          qrHtml += '"/>';
+        }
+
+        qrHtml += '</tr>';
+      }
+
+      qrHtml += '</tbody>';
+      qrHtml += '</table>';
+
+      return qrHtml;
+    };
+
+    _this.createSvgTag = function(cellSize, margin, alt, title) {
+
+      var opts = {};
+      if (typeof arguments[0] == 'object') {
+        // Called by options.
+        opts = arguments[0];
+        // overwrite cellSize and margin.
+        cellSize = opts.cellSize;
+        margin = opts.margin;
+        alt = opts.alt;
+        title = opts.title;
+      }
+
+      cellSize = cellSize || 2;
+      margin = (typeof margin == 'undefined')? cellSize * 4 : margin;
+
+      // Compose alt property surrogate
+      alt = (typeof alt === 'string') ? {text: alt} : alt || {};
+      alt.text = alt.text || null;
+      alt.id = (alt.text) ? alt.id || 'qrcode-description' : null;
+
+      // Compose title property surrogate
+      title = (typeof title === 'string') ? {text: title} : title || {};
+      title.text = title.text || null;
+      title.id = (title.text) ? title.id || 'qrcode-title' : null;
+
+      var size = _this.getModuleCount() * cellSize + margin * 2;
+      var c, mc, r, mr, qrSvg='', rect;
+
+      rect = 'l' + cellSize + ',0 0,' + cellSize +
+        ' -' + cellSize + ',0 0,-' + cellSize + 'z ';
+
+      qrSvg += '<svg version="1.1" xmlns="http://www.w3.org/2000/svg"';
+      qrSvg += !opts.scalable ? ' width="' + size + 'px" height="' + size + 'px"' : '';
+      qrSvg += ' viewBox="0 0 ' + size + ' ' + size + '" ';
+      qrSvg += ' preserveAspectRatio="xMinYMin meet"';
+      qrSvg += (title.text || alt.text) ? ' role="img" aria-labelledby="' +
+          escapeXml([title.id, alt.id].join(' ').trim() ) + '"' : '';
+      qrSvg += '>';
+      qrSvg += (title.text) ? '<title id="' + escapeXml(title.id) + '">' +
+          escapeXml(title.text) + '</title>' : '';
+      qrSvg += (alt.text) ? '<description id="' + escapeXml(alt.id) + '">' +
+          escapeXml(alt.text) + '</description>' : '';
+      qrSvg += '<rect width="100%" height="100%" fill="white" cx="0" cy="0"/>';
+      qrSvg += '<path d="';
+
+      for (r = 0; r < _this.getModuleCount(); r += 1) {
+        mr = r * cellSize + margin;
+        for (c = 0; c < _this.getModuleCount(); c += 1) {
+          if (_this.isDark(r, c) ) {
+            mc = c*cellSize+margin;
+            qrSvg += 'M' + mc + ',' + mr + rect;
+          }
+        }
+      }
+
+      qrSvg += '" stroke="transparent" fill="black"/>';
+      qrSvg += '</svg>';
+
+      return qrSvg;
+    };
+
+    _this.createDataURL = function(cellSize, margin) {
+
+      cellSize = cellSize || 2;
+      margin = (typeof margin == 'undefined')? cellSize * 4 : margin;
+
+      var size = _this.getModuleCount() * cellSize + margin * 2;
+      var min = margin;
+      var max = size - margin;
+
+      return createDataURL(size, size, function(x, y) {
+        if (min <= x && x < max && min <= y && y < max) {
+          var c = Math.floor( (x - min) / cellSize);
+          var r = Math.floor( (y - min) / cellSize);
+          return _this.isDark(r, c)? 0 : 1;
+        } else {
+          return 1;
+        }
+      } );
+    };
+
+    _this.createImgTag = function(cellSize, margin, alt) {
+
+      cellSize = cellSize || 2;
+      margin = (typeof margin == 'undefined')? cellSize * 4 : margin;
+
+      var size = _this.getModuleCount() * cellSize + margin * 2;
+
+      var img = '';
+      img += '<img';
+      img += '\u0020src="';
+      img += _this.createDataURL(cellSize, margin);
+      img += '"';
+      img += '\u0020width="';
+      img += size;
+      img += '"';
+      img += '\u0020height="';
+      img += size;
+      img += '"';
+      if (alt) {
+        img += '\u0020alt="';
+        img += escapeXml(alt);
+        img += '"';
+      }
+      img += '/>';
+
+      return img;
+    };
+
+    var escapeXml = function(s) {
+      var escaped = '';
+      for (var i = 0; i < s.length; i += 1) {
+        var c = s.charAt(i);
+        switch(c) {
+        case '<': escaped += '&lt;'; break;
+        case '>': escaped += '&gt;'; break;
+        case '&': escaped += '&amp;'; break;
+        case '"': escaped += '&quot;'; break;
+        default : escaped += c; break;
+        }
+      }
+      return escaped;
+    };
+
+    var _createHalfASCII = function(margin) {
+      var cellSize = 1;
+      margin = (typeof margin == 'undefined')? cellSize * 2 : margin;
+
+      var size = _this.getModuleCount() * cellSize + margin * 2;
+      var min = margin;
+      var max = size - margin;
+
+      var y, x, r1, r2, p;
+
+      var blocks = {
+        '██': '█',
+        '█ ': '▀',
+        ' █': '▄',
+        '  ': ' '
+      };
+
+      var blocksLastLineNoMargin = {
+        '██': '▀',
+        '█ ': '▀',
+        ' █': ' ',
+        '  ': ' '
+      };
+
+      var ascii = '';
+      for (y = 0; y < size; y += 2) {
+        r1 = Math.floor((y - min) / cellSize);
+        r2 = Math.floor((y + 1 - min) / cellSize);
+        for (x = 0; x < size; x += 1) {
+          p = '█';
+
+          if (min <= x && x < max && min <= y && y < max && _this.isDark(r1, Math.floor((x - min) / cellSize))) {
+            p = ' ';
+          }
+
+          if (min <= x && x < max && min <= y+1 && y+1 < max && _this.isDark(r2, Math.floor((x - min) / cellSize))) {
+            p += ' ';
+          }
+          else {
+            p += '█';
+          }
+
+          // Output 2 characters per pixel, to create full square. 1 character per pixels gives only half width of square.
+          ascii += (margin < 1 && y+1 >= max) ? blocksLastLineNoMargin[p] : blocks[p];
+        }
+
+        ascii += '\n';
+      }
+
+      if (size % 2 && margin > 0) {
+        return ascii.substring(0, ascii.length - size - 1) + Array(size+1).join('▀');
+      }
+
+      return ascii.substring(0, ascii.length-1);
+    };
+
+    _this.createASCII = function(cellSize, margin) {
+      cellSize = cellSize || 1;
+
+      if (cellSize < 2) {
+        return _createHalfASCII(margin);
+      }
+
+      cellSize -= 1;
+      margin = (typeof margin == 'undefined')? cellSize * 2 : margin;
+
+      var size = _this.getModuleCount() * cellSize + margin * 2;
+      var min = margin;
+      var max = size - margin;
+
+      var y, x, r, p;
+
+      var white = Array(cellSize+1).join('██');
+      var black = Array(cellSize+1).join('  ');
+
+      var ascii = '';
+      var line = '';
+      for (y = 0; y < size; y += 1) {
+        r = Math.floor( (y - min) / cellSize);
+        line = '';
+        for (x = 0; x < size; x += 1) {
+          p = 1;
+
+          if (min <= x && x < max && min <= y && y < max && _this.isDark(r, Math.floor((x - min) / cellSize))) {
+            p = 0;
+          }
+
+          // Output 2 characters per pixel, to create full square. 1 character per pixels gives only half width of square.
+          line += p ? white : black;
+        }
+
+        for (r = 0; r < cellSize; r += 1) {
+          ascii += line + '\n';
+        }
+      }
+
+      return ascii.substring(0, ascii.length-1);
+    };
+
+    _this.renderTo2dContext = function(context, cellSize) {
+      cellSize = cellSize || 2;
+      var length = _this.getModuleCount();
+      for (var row = 0; row < length; row++) {
+        for (var col = 0; col < length; col++) {
+          context.fillStyle = _this.isDark(row, col) ? 'black' : 'white';
+          context.fillRect(row * cellSize, col * cellSize, cellSize, cellSize);
+        }
+      }
+    }
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // qrcode.stringToBytes
+  //---------------------------------------------------------------------
+
+  qrcode.stringToBytesFuncs = {
+    'default' : function(s) {
+      var bytes = [];
+      for (var i = 0; i < s.length; i += 1) {
+        var c = s.charCodeAt(i);
+        bytes.push(c & 0xff);
+      }
+      return bytes;
+    }
+  };
+
+  qrcode.stringToBytes = qrcode.stringToBytesFuncs['default'];
+
+  //---------------------------------------------------------------------
+  // qrcode.createStringToBytes
+  //---------------------------------------------------------------------
+
+  /**
+   * @param unicodeData base64 string of byte array.
+   * [16bit Unicode],[16bit Bytes], ...
+   * @param numChars
+   */
+  qrcode.createStringToBytes = function(unicodeData, numChars) {
+
+    // create conversion map.
+
+    var unicodeMap = function() {
+
+      var bin = base64DecodeInputStream(unicodeData);
+      var read = function() {
+        var b = bin.read();
+        if (b == -1) throw 'eof';
+        return b;
+      };
+
+      var count = 0;
+      var unicodeMap = {};
+      while (true) {
+        var b0 = bin.read();
+        if (b0 == -1) break;
+        var b1 = read();
+        var b2 = read();
+        var b3 = read();
+        var k = String.fromCharCode( (b0 << 8) | b1);
+        var v = (b2 << 8) | b3;
+        unicodeMap[k] = v;
+        count += 1;
+      }
+      if (count != numChars) {
+        throw count + ' != ' + numChars;
+      }
+
+      return unicodeMap;
+    }();
+
+    var unknownChar = '?'.charCodeAt(0);
+
+    return function(s) {
+      var bytes = [];
+      for (var i = 0; i < s.length; i += 1) {
+        var c = s.charCodeAt(i);
+        if (c < 128) {
+          bytes.push(c);
+        } else {
+          var b = unicodeMap[s.charAt(i)];
+          if (typeof b == 'number') {
+            if ( (b & 0xff) == b) {
+              // 1byte
+              bytes.push(b);
+            } else {
+              // 2bytes
+              bytes.push(b >>> 8);
+              bytes.push(b & 0xff);
+            }
+          } else {
+            bytes.push(unknownChar);
+          }
+        }
+      }
+      return bytes;
+    };
+  };
+
+  //---------------------------------------------------------------------
+  // QRMode
+  //---------------------------------------------------------------------
+
+  var QRMode = {
+    MODE_NUMBER :    1 << 0,
+    MODE_ALPHA_NUM : 1 << 1,
+    MODE_8BIT_BYTE : 1 << 2,
+    MODE_KANJI :     1 << 3
+  };
+
+  //---------------------------------------------------------------------
+  // QRErrorCorrectionLevel
+  //---------------------------------------------------------------------
+
+  var QRErrorCorrectionLevel = {
+    L : 1,
+    M : 0,
+    Q : 3,
+    H : 2
+  };
+
+  //---------------------------------------------------------------------
+  // QRMaskPattern
+  //---------------------------------------------------------------------
+
+  var QRMaskPattern = {
+    PATTERN000 : 0,
+    PATTERN001 : 1,
+    PATTERN010 : 2,
+    PATTERN011 : 3,
+    PATTERN100 : 4,
+    PATTERN101 : 5,
+    PATTERN110 : 6,
+    PATTERN111 : 7
+  };
+
+  //---------------------------------------------------------------------
+  // QRUtil
+  //---------------------------------------------------------------------
+
+  var QRUtil = function() {
+
+    var PATTERN_POSITION_TABLE = [
+      [],
+      [6, 18],
+      [6, 22],
+      [6, 26],
+      [6, 30],
+      [6, 34],
+      [6, 22, 38],
+      [6, 24, 42],
+      [6, 26, 46],
+      [6, 28, 50],
+      [6, 30, 54],
+      [6, 32, 58],
+      [6, 34, 62],
+      [6, 26, 46, 66],
+      [6, 26, 48, 70],
+      [6, 26, 50, 74],
+      [6, 30, 54, 78],
+      [6, 30, 56, 82],
+      [6, 30, 58, 86],
+      [6, 34, 62, 90],
+      [6, 28, 50, 72, 94],
+      [6, 26, 50, 74, 98],
+      [6, 30, 54, 78, 102],
+      [6, 28, 54, 80, 106],
+      [6, 32, 58, 84, 110],
+      [6, 30, 58, 86, 114],
+      [6, 34, 62, 90, 118],
+      [6, 26, 50, 74, 98, 122],
+      [6, 30, 54, 78, 102, 126],
+      [6, 26, 52, 78, 104, 130],
+      [6, 30, 56, 82, 108, 134],
+      [6, 34, 60, 86, 112, 138],
+      [6, 30, 58, 86, 114, 142],
+      [6, 34, 62, 90, 118, 146],
+      [6, 30, 54, 78, 102, 126, 150],
+      [6, 24, 50, 76, 102, 128, 154],
+      [6, 28, 54, 80, 106, 132, 158],
+      [6, 32, 58, 84, 110, 136, 162],
+      [6, 26, 54, 82, 110, 138, 166],
+      [6, 30, 58, 86, 114, 142, 170]
+    ];
+    var G15 = (1 << 10) | (1 << 8) | (1 << 5) | (1 << 4) | (1 << 2) | (1 << 1) | (1 << 0);
+    var G18 = (1 << 12) | (1 << 11) | (1 << 10) | (1 << 9) | (1 << 8) | (1 << 5) | (1 << 2) | (1 << 0);
+    var G15_MASK = (1 << 14) | (1 << 12) | (1 << 10) | (1 << 4) | (1 << 1);
+
+    var _this = {};
+
+    var getBCHDigit = function(data) {
+      var digit = 0;
+      while (data != 0) {
+        digit += 1;
+        data >>>= 1;
+      }
+      return digit;
+    };
+
+    _this.getBCHTypeInfo = function(data) {
+      var d = data << 10;
+      while (getBCHDigit(d) - getBCHDigit(G15) >= 0) {
+        d ^= (G15 << (getBCHDigit(d) - getBCHDigit(G15) ) );
+      }
+      return ( (data << 10) | d) ^ G15_MASK;
+    };
+
+    _this.getBCHTypeNumber = function(data) {
+      var d = data << 12;
+      while (getBCHDigit(d) - getBCHDigit(G18) >= 0) {
+        d ^= (G18 << (getBCHDigit(d) - getBCHDigit(G18) ) );
+      }
+      return (data << 12) | d;
+    };
+
+    _this.getPatternPosition = function(typeNumber) {
+      return PATTERN_POSITION_TABLE[typeNumber - 1];
+    };
+
+    _this.getMaskFunction = function(maskPattern) {
+
+      switch (maskPattern) {
+
+      case QRMaskPattern.PATTERN000 :
+        return function(i, j) { return (i + j) % 2 == 0; };
+      case QRMaskPattern.PATTERN001 :
+        return function(i, j) { return i % 2 == 0; };
+      case QRMaskPattern.PATTERN010 :
+        return function(i, j) { return j % 3 == 0; };
+      case QRMaskPattern.PATTERN011 :
+        return function(i, j) { return (i + j) % 3 == 0; };
+      case QRMaskPattern.PATTERN100 :
+        return function(i, j) { return (Math.floor(i / 2) + Math.floor(j / 3) ) % 2 == 0; };
+      case QRMaskPattern.PATTERN101 :
+        return function(i, j) { return (i * j) % 2 + (i * j) % 3 == 0; };
+      case QRMaskPattern.PATTERN110 :
+        return function(i, j) { return ( (i * j) % 2 + (i * j) % 3) % 2 == 0; };
+      case QRMaskPattern.PATTERN111 :
+        return function(i, j) { return ( (i * j) % 3 + (i + j) % 2) % 2 == 0; };
+
+      default :
+        throw 'bad maskPattern:' + maskPattern;
+      }
+    };
+
+    _this.getErrorCorrectPolynomial = function(errorCorrectLength) {
+      var a = qrPolynomial([1], 0);
+      for (var i = 0; i < errorCorrectLength; i += 1) {
+        a = a.multiply(qrPolynomial([1, QRMath.gexp(i)], 0) );
+      }
+      return a;
+    };
+
+    _this.getLengthInBits = function(mode, type) {
+
+      if (1 <= type && type < 10) {
+
+        // 1 - 9
+
+        switch(mode) {
+        case QRMode.MODE_NUMBER    : return 10;
+        case QRMode.MODE_ALPHA_NUM : return 9;
+        case QRMode.MODE_8BIT_BYTE : return 8;
+        case QRMode.MODE_KANJI     : return 8;
+        default :
+          throw 'mode:' + mode;
+        }
+
+      } else if (type < 27) {
+
+        // 10 - 26
+
+        switch(mode) {
+        case QRMode.MODE_NUMBER    : return 12;
+        case QRMode.MODE_ALPHA_NUM : return 11;
+        case QRMode.MODE_8BIT_BYTE : return 16;
+        case QRMode.MODE_KANJI     : return 10;
+        default :
+          throw 'mode:' + mode;
+        }
+
+      } else if (type < 41) {
+
+        // 27 - 40
+
+        switch(mode) {
+        case QRMode.MODE_NUMBER    : return 14;
+        case QRMode.MODE_ALPHA_NUM : return 13;
+        case QRMode.MODE_8BIT_BYTE : return 16;
+        case QRMode.MODE_KANJI     : return 12;
+        default :
+          throw 'mode:' + mode;
+        }
+
+      } else {
+        throw 'type:' + type;
+      }
+    };
+
+    _this.getLostPoint = function(qrcode) {
+
+      var moduleCount = qrcode.getModuleCount();
+
+      var lostPoint = 0;
+
+      // LEVEL1
+
+      for (var row = 0; row < moduleCount; row += 1) {
+        for (var col = 0; col < moduleCount; col += 1) {
+
+          var sameCount = 0;
+          var dark = qrcode.isDark(row, col);
+
+          for (var r = -1; r <= 1; r += 1) {
+
+            if (row + r < 0 || moduleCount <= row + r) {
+              continue;
+            }
+
+            for (var c = -1; c <= 1; c += 1) {
+
+              if (col + c < 0 || moduleCount <= col + c) {
+                continue;
+              }
+
+              if (r == 0 && c == 0) {
+                continue;
+              }
+
+              if (dark == qrcode.isDark(row + r, col + c) ) {
+                sameCount += 1;
+              }
+            }
+          }
+
+          if (sameCount > 5) {
+            lostPoint += (3 + sameCount - 5);
+          }
+        }
+      };
+
+      // LEVEL2
+
+      for (var row = 0; row < moduleCount - 1; row += 1) {
+        for (var col = 0; col < moduleCount - 1; col += 1) {
+          var count = 0;
+          if (qrcode.isDark(row, col) ) count += 1;
+          if (qrcode.isDark(row + 1, col) ) count += 1;
+          if (qrcode.isDark(row, col + 1) ) count += 1;
+          if (qrcode.isDark(row + 1, col + 1) ) count += 1;
+          if (count == 0 || count == 4) {
+            lostPoint += 3;
+          }
+        }
+      }
+
+      // LEVEL3
+
+      for (var row = 0; row < moduleCount; row += 1) {
+        for (var col = 0; col < moduleCount - 6; col += 1) {
+          if (qrcode.isDark(row, col)
+              && !qrcode.isDark(row, col + 1)
+              &&  qrcode.isDark(row, col + 2)
+              &&  qrcode.isDark(row, col + 3)
+              &&  qrcode.isDark(row, col + 4)
+              && !qrcode.isDark(row, col + 5)
+              &&  qrcode.isDark(row, col + 6) ) {
+            lostPoint += 40;
+          }
+        }
+      }
+
+      for (var col = 0; col < moduleCount; col += 1) {
+        for (var row = 0; row < moduleCount - 6; row += 1) {
+          if (qrcode.isDark(row, col)
+              && !qrcode.isDark(row + 1, col)
+              &&  qrcode.isDark(row + 2, col)
+              &&  qrcode.isDark(row + 3, col)
+              &&  qrcode.isDark(row + 4, col)
+              && !qrcode.isDark(row + 5, col)
+              &&  qrcode.isDark(row + 6, col) ) {
+            lostPoint += 40;
+          }
+        }
+      }
+
+      // LEVEL4
+
+      var darkCount = 0;
+
+      for (var col = 0; col < moduleCount; col += 1) {
+        for (var row = 0; row < moduleCount; row += 1) {
+          if (qrcode.isDark(row, col) ) {
+            darkCount += 1;
+          }
+        }
+      }
+
+      var ratio = Math.abs(100 * darkCount / moduleCount / moduleCount - 50) / 5;
+      lostPoint += ratio * 10;
+
+      return lostPoint;
+    };
+
+    return _this;
+  }();
+
+  //---------------------------------------------------------------------
+  // QRMath
+  //---------------------------------------------------------------------
+
+  var QRMath = function() {
+
+    var EXP_TABLE = new Array(256);
+    var LOG_TABLE = new Array(256);
+
+    // initialize tables
+    for (var i = 0; i < 8; i += 1) {
+      EXP_TABLE[i] = 1 << i;
+    }
+    for (var i = 8; i < 256; i += 1) {
+      EXP_TABLE[i] = EXP_TABLE[i - 4]
+        ^ EXP_TABLE[i - 5]
+        ^ EXP_TABLE[i - 6]
+        ^ EXP_TABLE[i - 8];
+    }
+    for (var i = 0; i < 255; i += 1) {
+      LOG_TABLE[EXP_TABLE[i] ] = i;
+    }
+
+    var _this = {};
+
+    _this.glog = function(n) {
+
+      if (n < 1) {
+        throw 'glog(' + n + ')';
+      }
+
+      return LOG_TABLE[n];
+    };
+
+    _this.gexp = function(n) {
+
+      while (n < 0) {
+        n += 255;
+      }
+
+      while (n >= 256) {
+        n -= 255;
+      }
+
+      return EXP_TABLE[n];
+    };
+
+    return _this;
+  }();
+
+  //---------------------------------------------------------------------
+  // qrPolynomial
+  //---------------------------------------------------------------------
+
+  function qrPolynomial(num, shift) {
+
+    if (typeof num.length == 'undefined') {
+      throw num.length + '/' + shift;
+    }
+
+    var _num = function() {
+      var offset = 0;
+      while (offset < num.length && num[offset] == 0) {
+        offset += 1;
+      }
+      var _num = new Array(num.length - offset + shift);
+      for (var i = 0; i < num.length - offset; i += 1) {
+        _num[i] = num[i + offset];
+      }
+      return _num;
+    }();
+
+    var _this = {};
+
+    _this.getAt = function(index) {
+      return _num[index];
+    };
+
+    _this.getLength = function() {
+      return _num.length;
+    };
+
+    _this.multiply = function(e) {
+
+      var num = new Array(_this.getLength() + e.getLength() - 1);
+
+      for (var i = 0; i < _this.getLength(); i += 1) {
+        for (var j = 0; j < e.getLength(); j += 1) {
+          num[i + j] ^= QRMath.gexp(QRMath.glog(_this.getAt(i) ) + QRMath.glog(e.getAt(j) ) );
+        }
+      }
+
+      return qrPolynomial(num, 0);
+    };
+
+    _this.mod = function(e) {
+
+      if (_this.getLength() - e.getLength() < 0) {
+        return _this;
+      }
+
+      var ratio = QRMath.glog(_this.getAt(0) ) - QRMath.glog(e.getAt(0) );
+
+      var num = new Array(_this.getLength() );
+      for (var i = 0; i < _this.getLength(); i += 1) {
+        num[i] = _this.getAt(i);
+      }
+
+      for (var i = 0; i < e.getLength(); i += 1) {
+        num[i] ^= QRMath.gexp(QRMath.glog(e.getAt(i) ) + ratio);
+      }
+
+      // recursive call
+      return qrPolynomial(num, 0).mod(e);
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // QRRSBlock
+  //---------------------------------------------------------------------
+
+  var QRRSBlock = function() {
+
+    var RS_BLOCK_TABLE = [
+
+      // L
+      // M
+      // Q
+      // H
+
+      // 1
+      [1, 26, 19],
+      [1, 26, 16],
+      [1, 26, 13],
+      [1, 26, 9],
+
+      // 2
+      [1, 44, 34],
+      [1, 44, 28],
+      [1, 44, 22],
+      [1, 44, 16],
+
+      // 3
+      [1, 70, 55],
+      [1, 70, 44],
+      [2, 35, 17],
+      [2, 35, 13],
+
+      // 4
+      [1, 100, 80],
+      [2, 50, 32],
+      [2, 50, 24],
+      [4, 25, 9],
+
+      // 5
+      [1, 134, 108],
+      [2, 67, 43],
+      [2, 33, 15, 2, 34, 16],
+      [2, 33, 11, 2, 34, 12],
+
+      // 6
+      [2, 86, 68],
+      [4, 43, 27],
+      [4, 43, 19],
+      [4, 43, 15],
+
+      // 7
+      [2, 98, 78],
+      [4, 49, 31],
+      [2, 32, 14, 4, 33, 15],
+      [4, 39, 13, 1, 40, 14],
+
+      // 8
+      [2, 121, 97],
+      [2, 60, 38, 2, 61, 39],
+      [4, 40, 18, 2, 41, 19],
+      [4, 40, 14, 2, 41, 15],
+
+      // 9
+      [2, 146, 116],
+      [3, 58, 36, 2, 59, 37],
+      [4, 36, 16, 4, 37, 17],
+      [4, 36, 12, 4, 37, 13],
+
+      // 10
+      [2, 86, 68, 2, 87, 69],
+      [4, 69, 43, 1, 70, 44],
+      [6, 43, 19, 2, 44, 20],
+      [6, 43, 15, 2, 44, 16],
+
+      // 11
+      [4, 101, 81],
+      [1, 80, 50, 4, 81, 51],
+      [4, 50, 22, 4, 51, 23],
+      [3, 36, 12, 8, 37, 13],
+
+      // 12
+      [2, 116, 92, 2, 117, 93],
+      [6, 58, 36, 2, 59, 37],
+      [4, 46, 20, 6, 47, 21],
+      [7, 42, 14, 4, 43, 15],
+
+      // 13
+      [4, 133, 107],
+      [8, 59, 37, 1, 60, 38],
+      [8, 44, 20, 4, 45, 21],
+      [12, 33, 11, 4, 34, 12],
+
+      // 14
+      [3, 145, 115, 1, 146, 116],
+      [4, 64, 40, 5, 65, 41],
+      [11, 36, 16, 5, 37, 17],
+      [11, 36, 12, 5, 37, 13],
+
+      // 15
+      [5, 109, 87, 1, 110, 88],
+      [5, 65, 41, 5, 66, 42],
+      [5, 54, 24, 7, 55, 25],
+      [11, 36, 12, 7, 37, 13],
+
+      // 16
+      [5, 122, 98, 1, 123, 99],
+      [7, 73, 45, 3, 74, 46],
+      [15, 43, 19, 2, 44, 20],
+      [3, 45, 15, 13, 46, 16],
+
+      // 17
+      [1, 135, 107, 5, 136, 108],
+      [10, 74, 46, 1, 75, 47],
+      [1, 50, 22, 15, 51, 23],
+      [2, 42, 14, 17, 43, 15],
+
+      // 18
+      [5, 150, 120, 1, 151, 121],
+      [9, 69, 43, 4, 70, 44],
+      [17, 50, 22, 1, 51, 23],
+      [2, 42, 14, 19, 43, 15],
+
+      // 19
+      [3, 141, 113, 4, 142, 114],
+      [3, 70, 44, 11, 71, 45],
+      [17, 47, 21, 4, 48, 22],
+      [9, 39, 13, 16, 40, 14],
+
+      // 20
+      [3, 135, 107, 5, 136, 108],
+      [3, 67, 41, 13, 68, 42],
+      [15, 54, 24, 5, 55, 25],
+      [15, 43, 15, 10, 44, 16],
+
+      // 21
+      [4, 144, 116, 4, 145, 117],
+      [17, 68, 42],
+      [17, 50, 22, 6, 51, 23],
+      [19, 46, 16, 6, 47, 17],
+
+      // 22
+      [2, 139, 111, 7, 140, 112],
+      [17, 74, 46],
+      [7, 54, 24, 16, 55, 25],
+      [34, 37, 13],
+
+      // 23
+      [4, 151, 121, 5, 152, 122],
+      [4, 75, 47, 14, 76, 48],
+      [11, 54, 24, 14, 55, 25],
+      [16, 45, 15, 14, 46, 16],
+
+      // 24
+      [6, 147, 117, 4, 148, 118],
+      [6, 73, 45, 14, 74, 46],
+      [11, 54, 24, 16, 55, 25],
+      [30, 46, 16, 2, 47, 17],
+
+      // 25
+      [8, 132, 106, 4, 133, 107],
+      [8, 75, 47, 13, 76, 48],
+      [7, 54, 24, 22, 55, 25],
+      [22, 45, 15, 13, 46, 16],
+
+      // 26
+      [10, 142, 114, 2, 143, 115],
+      [19, 74, 46, 4, 75, 47],
+      [28, 50, 22, 6, 51, 23],
+      [33, 46, 16, 4, 47, 17],
+
+      // 27
+      [8, 152, 122, 4, 153, 123],
+      [22, 73, 45, 3, 74, 46],
+      [8, 53, 23, 26, 54, 24],
+      [12, 45, 15, 28, 46, 16],
+
+      // 28
+      [3, 147, 117, 10, 148, 118],
+      [3, 73, 45, 23, 74, 46],
+      [4, 54, 24, 31, 55, 25],
+      [11, 45, 15, 31, 46, 16],
+
+      // 29
+      [7, 146, 116, 7, 147, 117],
+      [21, 73, 45, 7, 74, 46],
+      [1, 53, 23, 37, 54, 24],
+      [19, 45, 15, 26, 46, 16],
+
+      // 30
+      [5, 145, 115, 10, 146, 116],
+      [19, 75, 47, 10, 76, 48],
+      [15, 54, 24, 25, 55, 25],
+      [23, 45, 15, 25, 46, 16],
+
+      // 31
+      [13, 145, 115, 3, 146, 116],
+      [2, 74, 46, 29, 75, 47],
+      [42, 54, 24, 1, 55, 25],
+      [23, 45, 15, 28, 46, 16],
+
+      // 32
+      [17, 145, 115],
+      [10, 74, 46, 23, 75, 47],
+      [10, 54, 24, 35, 55, 25],
+      [19, 45, 15, 35, 46, 16],
+
+      // 33
+      [17, 145, 115, 1, 146, 116],
+      [14, 74, 46, 21, 75, 47],
+      [29, 54, 24, 19, 55, 25],
+      [11, 45, 15, 46, 46, 16],
+
+      // 34
+      [13, 145, 115, 6, 146, 116],
+      [14, 74, 46, 23, 75, 47],
+      [44, 54, 24, 7, 55, 25],
+      [59, 46, 16, 1, 47, 17],
+
+      // 35
+      [12, 151, 121, 7, 152, 122],
+      [12, 75, 47, 26, 76, 48],
+      [39, 54, 24, 14, 55, 25],
+      [22, 45, 15, 41, 46, 16],
+
+      // 36
+      [6, 151, 121, 14, 152, 122],
+      [6, 75, 47, 34, 76, 48],
+      [46, 54, 24, 10, 55, 25],
+      [2, 45, 15, 64, 46, 16],
+
+      // 37
+      [17, 152, 122, 4, 153, 123],
+      [29, 74, 46, 14, 75, 47],
+      [49, 54, 24, 10, 55, 25],
+      [24, 45, 15, 46, 46, 16],
+
+      // 38
+      [4, 152, 122, 18, 153, 123],
+      [13, 74, 46, 32, 75, 47],
+      [48, 54, 24, 14, 55, 25],
+      [42, 45, 15, 32, 46, 16],
+
+      // 39
+      [20, 147, 117, 4, 148, 118],
+      [40, 75, 47, 7, 76, 48],
+      [43, 54, 24, 22, 55, 25],
+      [10, 45, 15, 67, 46, 16],
+
+      // 40
+      [19, 148, 118, 6, 149, 119],
+      [18, 75, 47, 31, 76, 48],
+      [34, 54, 24, 34, 55, 25],
+      [20, 45, 15, 61, 46, 16]
+    ];
+
+    var qrRSBlock = function(totalCount, dataCount) {
+      var _this = {};
+      _this.totalCount = totalCount;
+      _this.dataCount = dataCount;
+      return _this;
+    };
+
+    var _this = {};
+
+    var getRsBlockTable = function(typeNumber, errorCorrectionLevel) {
+
+      switch(errorCorrectionLevel) {
+      case QRErrorCorrectionLevel.L :
+        return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 0];
+      case QRErrorCorrectionLevel.M :
+        return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 1];
+      case QRErrorCorrectionLevel.Q :
+        return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 2];
+      case QRErrorCorrectionLevel.H :
+        return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 3];
+      default :
+        return undefined;
+      }
+    };
+
+    _this.getRSBlocks = function(typeNumber, errorCorrectionLevel) {
+
+      var rsBlock = getRsBlockTable(typeNumber, errorCorrectionLevel);
+
+      if (typeof rsBlock == 'undefined') {
+        throw 'bad rs block @ typeNumber:' + typeNumber +
+            '/errorCorrectionLevel:' + errorCorrectionLevel;
+      }
+
+      var length = rsBlock.length / 3;
+
+      var list = [];
+
+      for (var i = 0; i < length; i += 1) {
+
+        var count = rsBlock[i * 3 + 0];
+        var totalCount = rsBlock[i * 3 + 1];
+        var dataCount = rsBlock[i * 3 + 2];
+
+        for (var j = 0; j < count; j += 1) {
+          list.push(qrRSBlock(totalCount, dataCount) );
+        }
+      }
+
+      return list;
+    };
+
+    return _this;
+  }();
+
+  //---------------------------------------------------------------------
+  // qrBitBuffer
+  //---------------------------------------------------------------------
+
+  var qrBitBuffer = function() {
+
+    var _buffer = [];
+    var _length = 0;
+
+    var _this = {};
+
+    _this.getBuffer = function() {
+      return _buffer;
+    };
+
+    _this.getAt = function(index) {
+      var bufIndex = Math.floor(index / 8);
+      return ( (_buffer[bufIndex] >>> (7 - index % 8) ) & 1) == 1;
+    };
+
+    _this.put = function(num, length) {
+      for (var i = 0; i < length; i += 1) {
+        _this.putBit( ( (num >>> (length - i - 1) ) & 1) == 1);
+      }
+    };
+
+    _this.getLengthInBits = function() {
+      return _length;
+    };
+
+    _this.putBit = function(bit) {
+
+      var bufIndex = Math.floor(_length / 8);
+      if (_buffer.length <= bufIndex) {
+        _buffer.push(0);
+      }
+
+      if (bit) {
+        _buffer[bufIndex] |= (0x80 >>> (_length % 8) );
+      }
+
+      _length += 1;
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // qrNumber
+  //---------------------------------------------------------------------
+
+  var qrNumber = function(data) {
+
+    var _mode = QRMode.MODE_NUMBER;
+    var _data = data;
+
+    var _this = {};
+
+    _this.getMode = function() {
+      return _mode;
+    };
+
+    _this.getLength = function(buffer) {
+      return _data.length;
+    };
+
+    _this.write = function(buffer) {
+
+      var data = _data;
+
+      var i = 0;
+
+      while (i + 2 < data.length) {
+        buffer.put(strToNum(data.substring(i, i + 3) ), 10);
+        i += 3;
+      }
+
+      if (i < data.length) {
+        if (data.length - i == 1) {
+          buffer.put(strToNum(data.substring(i, i + 1) ), 4);
+        } else if (data.length - i == 2) {
+          buffer.put(strToNum(data.substring(i, i + 2) ), 7);
+        }
+      }
+    };
+
+    var strToNum = function(s) {
+      var num = 0;
+      for (var i = 0; i < s.length; i += 1) {
+        num = num * 10 + chatToNum(s.charAt(i) );
+      }
+      return num;
+    };
+
+    var chatToNum = function(c) {
+      if ('0' <= c && c <= '9') {
+        return c.charCodeAt(0) - '0'.charCodeAt(0);
+      }
+      throw 'illegal char :' + c;
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // qrAlphaNum
+  //---------------------------------------------------------------------
+
+  var qrAlphaNum = function(data) {
+
+    var _mode = QRMode.MODE_ALPHA_NUM;
+    var _data = data;
+
+    var _this = {};
+
+    _this.getMode = function() {
+      return _mode;
+    };
+
+    _this.getLength = function(buffer) {
+      return _data.length;
+    };
+
+    _this.write = function(buffer) {
+
+      var s = _data;
+
+      var i = 0;
+
+      while (i + 1 < s.length) {
+        buffer.put(
+          getCode(s.charAt(i) ) * 45 +
+          getCode(s.charAt(i + 1) ), 11);
+        i += 2;
+      }
+
+      if (i < s.length) {
+        buffer.put(getCode(s.charAt(i) ), 6);
+      }
+    };
+
+    var getCode = function(c) {
+
+      if ('0' <= c && c <= '9') {
+        return c.charCodeAt(0) - '0'.charCodeAt(0);
+      } else if ('A' <= c && c <= 'Z') {
+        return c.charCodeAt(0) - 'A'.charCodeAt(0) + 10;
+      } else {
+        switch (c) {
+        case ' ' : return 36;
+        case '$' : return 37;
+        case '%' : return 38;
+        case '*' : return 39;
+        case '+' : return 40;
+        case '-' : return 41;
+        case '.' : return 42;
+        case '/' : return 43;
+        case ':' : return 44;
+        default :
+          throw 'illegal char :' + c;
+        }
+      }
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // qr8BitByte
+  //---------------------------------------------------------------------
+
+  var qr8BitByte = function(data) {
+
+    var _mode = QRMode.MODE_8BIT_BYTE;
+    var _data = data;
+    var _bytes = qrcode.stringToBytes(data);
+
+    var _this = {};
+
+    _this.getMode = function() {
+      return _mode;
+    };
+
+    _this.getLength = function(buffer) {
+      return _bytes.length;
+    };
+
+    _this.write = function(buffer) {
+      for (var i = 0; i < _bytes.length; i += 1) {
+        buffer.put(_bytes[i], 8);
+      }
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // qrKanji
+  //---------------------------------------------------------------------
+
+  var qrKanji = function(data) {
+
+    var _mode = QRMode.MODE_KANJI;
+    var _data = data;
+
+    var stringToBytes = qrcode.stringToBytesFuncs['SJIS'];
+    if (!stringToBytes) {
+      throw 'sjis not supported.';
+    }
+    !function(c, code) {
+      // self test for sjis support.
+      var test = stringToBytes(c);
+      if (test.length != 2 || ( (test[0] << 8) | test[1]) != code) {
+        throw 'sjis not supported.';
+      }
+    }('\u53cb', 0x9746);
+
+    var _bytes = stringToBytes(data);
+
+    var _this = {};
+
+    _this.getMode = function() {
+      return _mode;
+    };
+
+    _this.getLength = function(buffer) {
+      return ~~(_bytes.length / 2);
+    };
+
+    _this.write = function(buffer) {
+
+      var data = _bytes;
+
+      var i = 0;
+
+      while (i + 1 < data.length) {
+
+        var c = ( (0xff & data[i]) << 8) | (0xff & data[i + 1]);
+
+        if (0x8140 <= c && c <= 0x9FFC) {
+          c -= 0x8140;
+        } else if (0xE040 <= c && c <= 0xEBBF) {
+          c -= 0xC140;
+        } else {
+          throw 'illegal char at ' + (i + 1) + '/' + c;
+        }
+
+        c = ( (c >>> 8) & 0xff) * 0xC0 + (c & 0xff);
+
+        buffer.put(c, 13);
+
+        i += 2;
+      }
+
+      if (i < data.length) {
+        throw 'illegal char at ' + (i + 1);
+      }
+    };
+
+    return _this;
+  };
+
+  //=====================================================================
+  // GIF Support etc.
+  //
+
+  //---------------------------------------------------------------------
+  // byteArrayOutputStream
+  //---------------------------------------------------------------------
+
+  var byteArrayOutputStream = function() {
+
+    var _bytes = [];
+
+    var _this = {};
+
+    _this.writeByte = function(b) {
+      _bytes.push(b & 0xff);
+    };
+
+    _this.writeShort = function(i) {
+      _this.writeByte(i);
+      _this.writeByte(i >>> 8);
+    };
+
+    _this.writeBytes = function(b, off, len) {
+      off = off || 0;
+      len = len || b.length;
+      for (var i = 0; i < len; i += 1) {
+        _this.writeByte(b[i + off]);
+      }
+    };
+
+    _this.writeString = function(s) {
+      for (var i = 0; i < s.length; i += 1) {
+        _this.writeByte(s.charCodeAt(i) );
+      }
+    };
+
+    _this.toByteArray = function() {
+      return _bytes;
+    };
+
+    _this.toString = function() {
+      var s = '';
+      s += '[';
+      for (var i = 0; i < _bytes.length; i += 1) {
+        if (i > 0) {
+          s += ',';
+        }
+        s += _bytes[i];
+      }
+      s += ']';
+      return s;
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // base64EncodeOutputStream
+  //---------------------------------------------------------------------
+
+  var base64EncodeOutputStream = function() {
+
+    var _buffer = 0;
+    var _buflen = 0;
+    var _length = 0;
+    var _base64 = '';
+
+    var _this = {};
+
+    var writeEncoded = function(b) {
+      _base64 += String.fromCharCode(encode(b & 0x3f) );
+    };
+
+    var encode = function(n) {
+      if (n < 0) {
+        // error.
+      } else if (n < 26) {
+        return 0x41 + n;
+      } else if (n < 52) {
+        return 0x61 + (n - 26);
+      } else if (n < 62) {
+        return 0x30 + (n - 52);
+      } else if (n == 62) {
+        return 0x2b;
+      } else if (n == 63) {
+        return 0x2f;
+      }
+      throw 'n:' + n;
+    };
+
+    _this.writeByte = function(n) {
+
+      _buffer = (_buffer << 8) | (n & 0xff);
+      _buflen += 8;
+      _length += 1;
+
+      while (_buflen >= 6) {
+        writeEncoded(_buffer >>> (_buflen - 6) );
+        _buflen -= 6;
+      }
+    };
+
+    _this.flush = function() {
+
+      if (_buflen > 0) {
+        writeEncoded(_buffer << (6 - _buflen) );
+        _buffer = 0;
+        _buflen = 0;
+      }
+
+      if (_length % 3 != 0) {
+        // padding
+        var padlen = 3 - _length % 3;
+        for (var i = 0; i < padlen; i += 1) {
+          _base64 += '=';
+        }
+      }
+    };
+
+    _this.toString = function() {
+      return _base64;
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // base64DecodeInputStream
+  //---------------------------------------------------------------------
+
+  var base64DecodeInputStream = function(str) {
+
+    var _str = str;
+    var _pos = 0;
+    var _buffer = 0;
+    var _buflen = 0;
+
+    var _this = {};
+
+    _this.read = function() {
+
+      while (_buflen < 8) {
+
+        if (_pos >= _str.length) {
+          if (_buflen == 0) {
+            return -1;
+          }
+          throw 'unexpected end of file./' + _buflen;
+        }
+
+        var c = _str.charAt(_pos);
+        _pos += 1;
+
+        if (c == '=') {
+          _buflen = 0;
+          return -1;
+        } else if (c.match(/^\s$/) ) {
+          // ignore if whitespace.
+          continue;
+        }
+
+        _buffer = (_buffer << 6) | decode(c.charCodeAt(0) );
+        _buflen += 6;
+      }
+
+      var n = (_buffer >>> (_buflen - 8) ) & 0xff;
+      _buflen -= 8;
+      return n;
+    };
+
+    var decode = function(c) {
+      if (0x41 <= c && c <= 0x5a) {
+        return c - 0x41;
+      } else if (0x61 <= c && c <= 0x7a) {
+        return c - 0x61 + 26;
+      } else if (0x30 <= c && c <= 0x39) {
+        return c - 0x30 + 52;
+      } else if (c == 0x2b) {
+        return 62;
+      } else if (c == 0x2f) {
+        return 63;
+      } else {
+        throw 'c:' + c;
+      }
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // gifImage (B/W)
+  //---------------------------------------------------------------------
+
+  var gifImage = function(width, height) {
+
+    var _width = width;
+    var _height = height;
+    var _data = new Array(width * height);
+
+    var _this = {};
+
+    _this.setPixel = function(x, y, pixel) {
+      _data[y * _width + x] = pixel;
+    };
+
+    _this.write = function(out) {
+
+      //---------------------------------
+      // GIF Signature
+
+      out.writeString('GIF87a');
+
+      //---------------------------------
+      // Screen Descriptor
+
+      out.writeShort(_width);
+      out.writeShort(_height);
+
+      out.writeByte(0x80); // 2bit
+      out.writeByte(0);
+      out.writeByte(0);
+
+      //---------------------------------
+      // Global Color Map
+
+      // black
+      out.writeByte(0x00);
+      out.writeByte(0x00);
+      out.writeByte(0x00);
+
+      // white
+      out.writeByte(0xff);
+      out.writeByte(0xff);
+      out.writeByte(0xff);
+
+      //---------------------------------
+      // Image Descriptor
+
+      out.writeString(',');
+      out.writeShort(0);
+      out.writeShort(0);
+      out.writeShort(_width);
+      out.writeShort(_height);
+      out.writeByte(0);
+
+      //---------------------------------
+      // Local Color Map
+
+      //---------------------------------
+      // Raster Data
+
+      var lzwMinCodeSize = 2;
+      var raster = getLZWRaster(lzwMinCodeSize);
+
+      out.writeByte(lzwMinCodeSize);
+
+      var offset = 0;
+
+      while (raster.length - offset > 255) {
+        out.writeByte(255);
+        out.writeBytes(raster, offset, 255);
+        offset += 255;
+      }
+
+      out.writeByte(raster.length - offset);
+      out.writeBytes(raster, offset, raster.length - offset);
+      out.writeByte(0x00);
+
+      //---------------------------------
+      // GIF Terminator
+      out.writeString(';');
+    };
+
+    var bitOutputStream = function(out) {
+
+      var _out = out;
+      var _bitLength = 0;
+      var _bitBuffer = 0;
+
+      var _this = {};
+
+      _this.write = function(data, length) {
+
+        if ( (data >>> length) != 0) {
+          throw 'length over';
+        }
+
+        while (_bitLength + length >= 8) {
+          _out.writeByte(0xff & ( (data << _bitLength) | _bitBuffer) );
+          length -= (8 - _bitLength);
+          data >>>= (8 - _bitLength);
+          _bitBuffer = 0;
+          _bitLength = 0;
+        }
+
+        _bitBuffer = (data << _bitLength) | _bitBuffer;
+        _bitLength = _bitLength + length;
+      };
+
+      _this.flush = function() {
+        if (_bitLength > 0) {
+          _out.writeByte(_bitBuffer);
+        }
+      };
+
+      return _this;
+    };
+
+    var getLZWRaster = function(lzwMinCodeSize) {
+
+      var clearCode = 1 << lzwMinCodeSize;
+      var endCode = (1 << lzwMinCodeSize) + 1;
+      var bitLength = lzwMinCodeSize + 1;
+
+      // Setup LZWTable
+      var table = lzwTable();
+
+      for (var i = 0; i < clearCode; i += 1) {
+        table.add(String.fromCharCode(i) );
+      }
+      table.add(String.fromCharCode(clearCode) );
+      table.add(String.fromCharCode(endCode) );
+
+      var byteOut = byteArrayOutputStream();
+      var bitOut = bitOutputStream(byteOut);
+
+      // clear code
+      bitOut.write(clearCode, bitLength);
+
+      var dataIndex = 0;
+
+      var s = String.fromCharCode(_data[dataIndex]);
+      dataIndex += 1;
+
+      while (dataIndex < _data.length) {
+
+        var c = String.fromCharCode(_data[dataIndex]);
+        dataIndex += 1;
+
+        if (table.contains(s + c) ) {
+
+          s = s + c;
+
+        } else {
+
+          bitOut.write(table.indexOf(s), bitLength);
+
+          if (table.size() < 0xfff) {
+
+            if (table.size() == (1 << bitLength) ) {
+              bitLength += 1;
+            }
+
+            table.add(s + c);
+          }
+
+          s = c;
+        }
+      }
+
+      bitOut.write(table.indexOf(s), bitLength);
+
+      // end code
+      bitOut.write(endCode, bitLength);
+
+      bitOut.flush();
+
+      return byteOut.toByteArray();
+    };
+
+    var lzwTable = function() {
+
+      var _map = {};
+      var _size = 0;
+
+      var _this = {};
+
+      _this.add = function(key) {
+        if (_this.contains(key) ) {
+          throw 'dup key:' + key;
+        }
+        _map[key] = _size;
+        _size += 1;
+      };
+
+      _this.size = function() {
+        return _size;
+      };
+
+      _this.indexOf = function(key) {
+        return _map[key];
+      };
+
+      _this.contains = function(key) {
+        return typeof _map[key] != 'undefined';
+      };
+
+      return _this;
+    };
+
+    return _this;
+  };
+
+  var createDataURL = function(width, height, getPixel) {
+    var gif = gifImage(width, height);
+    for (var y = 0; y < height; y += 1) {
+      for (var x = 0; x < width; x += 1) {
+        gif.setPixel(x, y, getPixel(x, y) );
+      }
+    }
+
+    var b = byteArrayOutputStream();
+    gif.write(b);
+
+    var base64 = base64EncodeOutputStream();
+    var bytes = b.toByteArray();
+    for (var i = 0; i < bytes.length; i += 1) {
+      base64.writeByte(bytes[i]);
+    }
+    base64.flush();
+
+    return 'data:image/gif;base64,' + base64;
+  };
+
+  //---------------------------------------------------------------------
+  // returns qrcode function.
+
+  return qrcode;
+}();
+
+// multibyte support
+!function() {
+
+  qrcode.stringToBytesFuncs['UTF-8'] = function(s) {
+    // http://stackoverflow.com/questions/18729405/how-to-convert-utf8-string-to-byte-array
+    function toUTF8Array(str) {
+      var utf8 = [];
+      for (var i=0; i < str.length; i++) {
+        var charcode = str.charCodeAt(i);
+        if (charcode < 0x80) utf8.push(charcode);
+        else if (charcode < 0x800) {
+          utf8.push(0xc0 | (charcode >> 6),
+              0x80 | (charcode & 0x3f));
+        }
+        else if (charcode < 0xd800 || charcode >= 0xe000) {
+          utf8.push(0xe0 | (charcode >> 12),
+              0x80 | ((charcode>>6) & 0x3f),
+              0x80 | (charcode & 0x3f));
+        }
+        // surrogate pair
+        else {
+          i++;
+          // UTF-16 encodes 0x10000-0x10FFFF by
+          // subtracting 0x10000 and splitting the
+          // 20 bits of 0x0-0xFFFFF into two halves
+          charcode = 0x10000 + (((charcode & 0x3ff)<<10)
+            | (str.charCodeAt(i) & 0x3ff));
+          utf8.push(0xf0 | (charcode >>18),
+              0x80 | ((charcode>>12) & 0x3f),
+              0x80 | ((charcode>>6) & 0x3f),
+              0x80 | (charcode & 0x3f));
+        }
+      }
+      return utf8;
+    }
+    return toUTF8Array(s);
+  };
+
+}();
+
+(function (factory) {
+  if (typeof define === 'function' && define.amd) {
+      define([], factory);
+  } else if (typeof exports === 'object') {
+      module.exports = factory();
+  }
+}(function () {
+    return qrcode;
+}));
+</script><script>/* © 2026 SAS BELM DEVELOPPEMENT. Tous droits réservés.  Tour de contrôle ENSEIGNANT (jeu 22). */
+const $ = id => document.getElementById(id);
+const H = AC.hash();
+let SEC = null, G = null, relay = null, tab = 'pilot', relayStatus = '…', ui = {open:{}, sl:'', sel:'', note:''};
+const LSK = 'ac_host_v1', LSKT = 'ac_host_test_v1';
+const now = () => Date.now();
+const LOADED = now();
+let pubTimer = null, rendering = false, lastPrimary = 0, unsubS = null, unsubP = null;
+
+/* ---------- déchiffrement des corrigés ---------- */
+async function unlock(code) {
+  const b64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+  const E = AC.ENC;
+  const km = await crypto.subtle.importKey('raw', new TextEncoder().encode(code), 'PBKDF2', false, ['deriveKey']);
+  const key = await crypto.subtle.deriveKey({name:'PBKDF2', salt:b64(E.salt), iterations:E.it, hash:'SHA-256'}, km, {name:'AES-GCM', length:256}, false, ['decrypt']);
+  const pt = await crypto.subtle.decrypt({name:'AES-GCM', iv:b64(E.iv)}, key, b64(E.ct));
+  return JSON.parse(new TextDecoder().decode(pt));
+}
+window.doUnlock = async () => {
+  const code = $('code').value.trim();
+  try { SEC = await unlock(code); } catch (e) { $('uerr').textContent = 'Code incorrect.'; return; }
+  const rd = k => { try { const x = JSON.parse(localStorage.getItem(k) || 'null'); return x && x.sid ? x : null; } catch (e) { return null; } };
+  ui.resume = rd(LSK); ui.resumeT = rd(LSKT);
+  boot();
+};
+
+/* ---------- état ---------- */
+function newGame(test, rl) {
+  G = {v:1, test:!!test, sid:AC.rid(8), relay:rl || AC.DEFAULT_RELAY, pl:{}, cur:null, played:{}, qdone:{}, auto:'direct', pend:null, slideSeen:0, lastSlide:null, ended:false, autoRev:false, t0:now()};
+  connect(); commit(true);
+}
+function resumeGame(s) { G = s; G.pend = null; connect(); commit(true); }
+function save() { try { localStorage.setItem(G.test ? LSKT : LSK, JSON.stringify(G)); } catch (e) {} }
+function connect() {
+  if (unsubP) unsubP(); if (unsubS) unsubS();
+  relay = new AC.Relay(G.relay, G.sid);
+  unsubP = relay.sub(relay.tP, 'all', onMsg, st => { relayStatus = st === 'ok' ? 'relais connecté' : 'relais : reconnexion…'; scheduleRender(); });
+  unsubS = relay.sub(relay.tS, 'all', onSlide, () => {});
+  scheduleRender();
+}
+function publish() { G.v++; save(); if (relay) relay.pubState(buildPub()); }
+function commit(immediate) {
+  save();
+  if (immediate) { clearTimeout(pubTimer); pubTimer = null; publish(); }
+  else if (!pubTimer) pubTimer = setTimeout(() => { pubTimer = null; publish(); }, 2500);
+  scheduleRender();
+}
+const grpOf = id => AC.grp(id);
+const curQ = () => G.cur ? AC.q(G.cur.qid) : null;
+const nPl = () => Object.keys(G.pl).length;
+
+function buildPub() {
+  const c = G.cur, R = AC.rankList(G.pl);
+  const P = {v:G.v, test:!!G.test, now:now(), end:!!G.ended, np:R.length, lb:R.slice(0, 10).map(x => [x.n, x.pts, Math.round(x.tt / 100) / 10, x.ok]), me:{}};
+  R.forEach((x, i) => { P.me[x.pid] = [i + 1, x.pts]; });
+  if (c) {
+    const g = grpOf(c.gid), q = AC.q(c.qid);
+    P.cur = {k:c.k, gid:c.gid, gt:g.titre, i:c.i, n:g.qs.length, qid:c.qid, st:c.st, dur:c.dur, rem:Math.max(0, c.dur - (now() - c.t0) / 1000), fin:q.final ? 1 : 0, done:Object.keys(c.ans)};
+    if (c.st === 'rev') {
+      const cnt = [0, 0, 0, 0]; Object.keys(c.ans).forEach(p => { cnt[c.ans[p].a]++; });
+      P.rev = {rep:SEC.q[c.qid][0], exp:SEC.q[c.qid][1], cnt, r:c.res || {}};
+    }
+  }
+  return P;
+}
+
+/* ---------- messages des joueurs ---------- */
+function uniqName(n, pid) {
+  let m = n, k = 2; const used = () => Object.keys(G.pl).some(p => p !== pid && G.pl[p].n.toLowerCase() === m.toLowerCase());
+  while (used()) m = n + ' ' + k++; return m;
+}
+function onMsg(o) {
+  if (!o || !o.k || !o.pid) return;
+  let ch = false, imm = false;
+  if (o.k === 'J') {
+    const n = String(o.n || '?').trim().slice(0, 16) || '?'; const P = G.pl[o.pid];
+    if (!P) { if (nPl() >= 40) return; G.pl[o.pid] = {n:uniqName(n, o.pid), pts:0, tt:0, ok:0, streak:0, res:{}, j:now()}; ch = true; imm = true; }
+    else if (P.n.replace(/ \d+$/, '') !== n) { P.n = uniqName(n, o.pid); ch = true; imm = true; }
+  } else if (o.k === 'A') {
+    const c = G.cur, P = G.pl[o.pid], a = +o.a;
+    if (!P || !c || c.st !== 'open' || o.q !== c.qid || o.ik !== c.k || c.ans[o.pid] || !(a >= 0 && a < 4)) return;
+    c.ans[o.pid] = {a, ms:now() - c.t0}; ch = true;
+    if (Object.keys(c.ans).length >= nPl()) { c.st = 'closed'; imm = true; if (G.autoRev) { reveal(); return; } }
+  }
+  if (ch) commit(imm);
+}
+function onSlide(o, m) {
+  if (!o || o.k !== 'S') return;
+  if (m && m.time && m.time * 1000 < LOADED - 1500) return;   // ignore les messages d'avant l'ouverture de cette page
+  G.slideSeen = now(); G.lastSlide = {n:o.n || null, gid:o.g || null, ts:now()};
+  const g = o.g && grpOf(o.g);
+  if (!g) { commit(false); return; }
+  if (G.played[g.id]) { ui.note = 'Diapo ' + g.slide + ' : « ' + g.titre + ' » déjà jouée (bouton Relancer dans l’onglet Questions).'; commit(false); return; }
+  const free = !G.cur || G.cur.st === 'rev';
+  if (G.auto === 'direct' && free) { ui.note = ''; launch(g.id, 0); }
+  else if (G.auto === 'manual') { ui.note = 'Diapo ' + g.slide + ' : « ' + g.titre + ' » (mode manuel : lancez-la vous-même).'; commit(false); }
+  else { G.pend = {gid:g.id}; commit(false); }
+}
+
+/* ---------- actions ---------- */
+function launch(gid, qi) {
+  const g = grpOf(gid), q = AC.q(g.qs[qi || 0]);
+  G.kseq = (G.kseq || 0) + 1;
+  G.cur = {gid, i:qi || 0, qid:g.qs[qi || 0], k:G.kseq, st:'open', t0:now(), dur:q.t, ans:{}, res:{}};
+  G.played[gid] = true; G.pend = null; ui.note = ''; commit(true);
+}
+function reveal() {
+  const c = G.cur; if (!c || c.st === 'rev') return;
+  const rep = SEC.q[c.qid][0], q = AC.q(c.qid), mult = q.final ? 2 : 1, R0 = AC.rankList(G.pl), rk0 = {}; R0.forEach((x, i) => rk0[x.pid] = i + 1);
+  c.res = {};
+  Object.keys(G.pl).forEach(pid => {
+    const P = G.pl[pid], a = c.ans[pid];
+    if (a && a.a === rep) {
+      const speed = Math.round(AC.SPEED * Math.max(0, 1 - a.ms / (c.dur * 1000))), st = AC.STREAK * Math.min(P.streak, AC.STREAKMAX), gain = (AC.BASE + speed + st) * mult;
+      P.pts += gain; P.tt += a.ms; P.ok++; P.streak++;
+      c.res[pid] = [a.a, gain, 1, AC.BASE, speed, st, mult, rk0[pid]]; P.res[c.qid] = {a:a.a, ms:a.ms, g:gain, ok:1};
+    } else { P.streak = 0; c.res[pid] = [a ? a.a : -1, 0, 0, 0, 0, 0, mult, rk0[pid]]; P.res[c.qid] = {a:a ? a.a : -1, ms:a ? a.ms : null, g:0, ok:0}; }
+  });
+  c.st = 'rev'; G.qdone[c.qid] = true; commit(true);
+}
+function stepInfo() {
+  const c = G.cur;
+  if (G.ended) return {label:'Séance terminée', act:null, ready:false, why:'La séance est terminée : exportez les résultats.'};
+  if (!c) {
+    const nx = nextSuggested();
+    return nx ? {label:'▶ Lancer : ' + nx.titre + ' (diapo ' + nx.slide + ')', act:() => launch(nx.id, 0), ready:true, why:'Aucune question en cours. Quand la diapo est à l’écran, lancez la suivante.'}
+              : {label:'Toutes les questions ont été jouées', act:null, ready:false, why:'Vous pouvez terminer la séance.'};
+  }
+  const g = grpOf(c.gid), last = c.i + 1 >= g.qs.length, answered = Object.keys(c.ans).length;
+  if (c.st === 'open') return {label:'■ Clore la question maintenant', act:() => { c.st = 'closed'; commit(true); }, ready:true, why:answered + ' / ' + nPl() + ' réponses reçues. Elle se clôt seule à la fin du chrono.'};
+  if (c.st === 'closed') return {label:'✔ Corriger et attribuer les points', act:reveal, ready:true, why:'La question est close : les joueurs attendent la correction.'};
+  return last ? {label:'⏹ Terminer ce groupe', act:() => { G.cur = null; commit(true); }, ready:true, why:'Correction affichée. Le groupe est terminé.'}
+              : {label:'▶ Question suivante (' + (c.i + 2) + ' / ' + g.qs.length + ')', act:() => launch(c.gid, c.i + 1), ready:true, why:'Correction affichée : discutez, puis passez à la suite.'};
+}
+function nextSuggested() {
+  const last = G.lastSlide && G.lastSlide.gid; if (last && !G.played[last]) return grpOf(last);
+  return AC.PUB.groups.find(g => !G.played[g.id]);
+}
+function doPrimary() {
+  if (now() - lastPrimary < 700) return; lastPrimary = now();
+  const s = stepInfo(); if (s.act) s.act();
+}
+function tick() {
+  if (!G || !G.cur) return;
+  const c = G.cur;
+  if (c.st === 'open' && now() > c.t0 + c.dur * 1000 + 1200) { c.st = 'closed'; if (G.autoRev) { reveal(); return; } commit(true); }
+  const el = $('tm'); if (el && c.st === 'open') { const rem = c.dur - (now() - c.t0) / 1000; el.textContent = AC.fmtT(rem); const cb = $('cb'); if (cb) { cb.style.width = Math.max(0, 100 * rem / c.dur) + '%'; cb.parentNode.className = 'cable' + (rem < 8 ? ' low' : ''); } }
+}
+setInterval(tick, 500);
+document.addEventListener('keydown', e => {
+  if (!G || tab !== 'pilot' || (e.key !== ' ' && e.key !== 'Enter')) return;
+  const t = e.target.tagName; if (t === 'INPUT' || t === 'SELECT' || t === 'TEXTAREA' || t === 'BUTTON') return;
+  e.preventDefault(); doPrimary();
+});
+
+/* ---------- mode test ---------- */
+const BOTN = ['Ada', 'Linus', 'Grace', 'Alan', 'Margaret', 'Dennis', 'Radia', 'Vint', 'Ken', 'Tim', 'Whit', 'Bruce'];
+function addBots(n) {
+  for (let i = 0; i < n; i++) { const pid = 'bot' + AC.rid(5); let nm = BOTN[Object.keys(G.pl).filter(p => p.startsWith('bot')).length % BOTN.length]; G.pl[pid] = {n:uniqName(nm, pid), pts:0, tt:0, ok:0, streak:0, res:{}, j:now(), bot:1}; }
+  commit(true);
+}
+function botAnswers(all) {
+  const c = G.cur; if (!c || c.st !== 'open') return; const rep = SEC.q[c.qid][0];
+  Object.keys(G.pl).filter(p => G.pl[p].bot && !c.ans[p]).forEach(p => {
+    const good = Math.random() < 0.65, a = good ? rep : [0, 1, 2, 3].filter(x => x !== rep)[Math.floor(Math.random() * 3)];
+    c.ans[p] = {a, ms:Math.round(1500 + Math.random() * c.dur * 650)};
+  });
+  if (Object.keys(c.ans).length >= nPl()) c.st = 'closed';
+  commit(true);
+}
+function resetPoints() { Object.keys(G.pl).forEach(p => { Object.assign(G.pl[p], {pts:0, tt:0, ok:0, streak:0, res:{}}); }); G.cur = null; G.played = {}; G.qdone = {}; G.ended = false; commit(true); }
+function goReal() {
+  if (!confirm('Créer une nouvelle séance RÉELLE (sans mode test) ? La séance de test restera sauvegardée sur ce PC. Les joueurs devront rescanner le nouveau QR code.')) return;
+  newGame(false, G.relay); tab = 'pilot';
+}
+
+/* ---------- exports ---------- */
+function dl(name, text) { const b = new Blob(['﻿' + text], {type:'text/csv;charset=utf-8'}), a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = (G.test ? 'TEST_' : '') + name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 3000); }
+const cs = v => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
+function exportCSV() {
+  const R = AC.rankList(G.pl), d = new Date().toISOString().slice(0, 10);
+  dl('LANLive_classement_' + d + '.csv', ['Rang;Pseudo;Points;Bonnes réponses;Temps cumulé des bonnes (s);Questions répondues'].concat(R.map((x, i) => [i + 1, cs(x.n), x.pts, x.ok, (x.tt / 1000).toFixed(1).replace('.', ','), Object.keys(x.res).filter(q => x.res[q].a >= 0).length].join(';'))).join('\r\n'));
+  const L = ['Pseudo;Question;Groupe;Réponse choisie;Bonne réponse;Correct;Temps (s);Points'];
+  R.forEach(x => Object.keys(x.res).sort().forEach(q => { const r = x.res[q], qq = AC.q(q); L.push([cs(x.n), q, cs(grpOf(qq.g).titre), r.a >= 0 ? AC.LET[r.a] : '—', AC.LET[SEC.q[q][0]], r.ok ? 'oui' : 'non', r.ms == null ? '' : (r.ms / 1000).toFixed(1).replace('.', ','), r.g].join(';')); }));
+  setTimeout(() => dl('LANLive_detail_' + d + '.csv', L.join('\r\n')), 400);
+}
+
+/* ---------- liens ---------- */
+const baseHash = () => 's=' + G.sid + (G.relay !== AC.DEFAULT_RELAY ? '&r=' + encodeURIComponent(G.relay) : '');
+window.joinUrl = () => { const u = new URL('joueur.html', location.href); u.hash = baseHash(); return u.href; };
+window.projUrl = () => { const u = new URL('classement.html', location.href); u.hash = baseHash(); return u.href; };
+function qrSvg(text, size) { const q = qrcode(0, 'M'); q.addData(text); q.make(); return q.createSvgTag({cellSize:Math.max(2, Math.floor(size / q.getModuleCount())), margin:2, scalable:true}); }
+window.copyTxt = (t) => { try { navigator.clipboard.writeText(t); } catch (e) {} };
+
+/* ---------- rendu ---------- */
+let rq = 0;
+function scheduleRender() { if (rq) return; rq = requestAnimationFrame(() => { rq = 0; render(); }); }
+function boot() {
+  $('lock').style.display = 'none'; $('app').style.display = 'block';
+  if (!G) { renderStart(); } else render();
+}
+function renderStart() {
+  const rs = (s, t) => s ? `<div class="card"><b>Séance ${t} en cours trouvée</b> sur ce PC (${Object.keys(s.pl).length} joueurs, ${Object.keys(s.played).length} groupes joués).<br><button class="btn go sm" style="margin-top:6px" onclick="window.resume('${t}')">Reprendre la séance ${t}</button></div>` : '';
+  $('app').innerHTML = `<div class="wrap"><h1>LAN Live · Tour de contrôle</h1><p class="muted">Sécurité des accès : ACL, VLAN, annuaires, protocoles (UCUE-S5-4-1)</p>
+    ${rs(ui.resume, 'réelle')}${rs(ui.resumeT, 'de test')}
+    <div class="card"><h2>Nouvelle séance</h2>
+    <label><input type="checkbox" id="ntest" checked> <b>Mode test</b> (joueurs fictifs, correction libre, résultats marqués TEST) : décochez pour une vraie séance</label>
+    <p class="muted">Relais temps réel :</p><input id="rl" value="${AC.esc(AC.DEFAULT_RELAY)}" style="width:100%;padding:8px;background:#050A14;color:#E8F1FF;border:1px solid #1F3556;border-radius:8px">
+    <p><button class="btn go" onclick="window.startNew()">Créer la séance</button></p></div></div>`;
+}
+window.resume = t => { const s = t === 'de test' ? ui.resumeT : ui.resume; ui.resume = ui.resumeT = null; resumeGame(s); };
+window.startNew = () => { newGame($('ntest').checked, $('rl').value.trim() || AC.DEFAULT_RELAY); };
+
+function header() {
+  const n = nPl(), tabs = [['pilot', 'Pilotage'], ['quest', 'Questions'], ['rank', 'Classement'], ['corr', 'Corrigés'], ['guide', 'Guide']];
+  return `<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:8px">
+   <div><h1 style="margin:0">LAN Live ${G.test ? '<span class="pill test">MODE TEST</span>' : '<span class="pill live">SÉANCE RÉELLE</span>'}</h1><span class="muted">${AC.PORTS(12)} ${AC.esc(relayStatus)}</span></div>
+   <div style="text-align:right"><div class="muted">Code de séance (macro PowerPoint)</div><b class="mono" style="font-size:1.5em;color:#29D3FF;cursor:pointer" title="Copier" onclick="copyTxt('${G.sid}')">${G.sid}</b><div><b>${n}</b> joueur${n > 1 ? 's' : ''} connecté${n > 1 ? 's' : ''}</div></div></div>
+   <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">${tabs.map(t => `<button class="btn ${tab === t[0] ? '' : 'alt'} sm" onclick="window.setTab('${t[0]}')">${t[1]}</button>`).join('')}
+   <span style="flex:1"></span><button class="btn alt sm" onclick="window.open(projUrl(),'_blank')">Ouvrir le classement projeté ↗</button><button class="btn alt sm" onclick="window.exportCSV()">Exporter CSV</button></div>`;
+}
+window.setTab = t => { tab = t; render(true); };
+window.exportCSV = exportCSV;
+function render(force) {
+  if (!G) return;
+  const ae = document.activeElement; if (!force && ae && ae.closest && ae.closest('#app') && /INPUT|SELECT|TEXTAREA/.test(ae.tagName)) return;
+  const body = tab === 'pilot' ? pilotTab() : tab === 'quest' ? questTab() : tab === 'rank' ? rankTab() : tab === 'corr' ? corrTab() : guideTab();
+  $('app').innerHTML = `<div class="wrap">${header()}${G.test ? testBar() : ''}${body}<div class="foot">${AC.FOOT}</div></div>`;
+}
+function testBar() {
+  const c = G.cur;
+  return `<div class="card" style="border-color:#FFB020"><h2 style="color:#FFB020">Mode test</h2><div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+   <button class="btn alt sm" onclick="window.addBots(6)">+ 6 joueurs fictifs</button>
+   <button class="btn alt sm" onclick="window.botAnswers()" ${c && c.st === 'open' ? '' : 'disabled'}>Faire répondre les fictifs</button>
+   <button class="btn alt sm" onclick="window.resetPoints()">Remettre à zéro</button>
+   <select id="gsel" style="background:#050A14;color:#E8F1FF;border:1px solid #1F3556;border-radius:8px;padding:5px">${AC.PUB.groups.map(g => `<option value="${g.id}">Diapo ${g.slide} · ${AC.esc(g.titre)}</option>`).join('')}</select>
+   <button class="btn alt sm" onclick="window.goto($('gsel').value)">Aller à ce groupe</button>
+   <button class="btn red sm" onclick="window.goReal()">Quitter le mode test → séance réelle</button></div></div>`;
+}
+window.addBots = addBots; window.botAnswers = botAnswers; window.resetPoints = resetPoints; window.goReal = goReal;
+window.goto = gid => launch(gid, 0);
+
+function pilotTab() {
+  const c = G.cur, s = stepInfo(), q = curQ();
+  let h = '';
+  if (!Object.keys(G.played).length && !G.ended) h += startGuide();
+  if (G.pend && !G.ended) { const g = grpOf(G.pend.gid); h += `<div class="card" style="border-color:#29D3FF;background:#0d2a44"><h2>Diapo ${g.slide} à l’écran</h2><p><b>${AC.esc(g.titre)}</b> · ${g.qs.length} question${g.qs.length > 1 ? 's' : ''}</p><button class="btn go" onclick="window.launchG('${g.id}')">▶ Lancer ces questions</button> <button class="btn alt" onclick="window.dismiss()">Ignorer</button></div>`; }
+  if (ui.note) h += `<div class="card"><span class="muted">${AC.esc(ui.note)}</span></div>`;
+  h += `<div class="card"><button class="btn xl ${s.ready ? 'go' : 'alt'}" ${s.act ? '' : 'disabled'} onclick="window.primary()">${AC.esc(s.label)}</button><p class="muted" style="margin:6px 0 0">${AC.esc(s.why)} · raccourci : touche <b>Espace</b>
+   · <label><input type="checkbox" ${G.autoRev ? 'checked' : ''} onchange="window.setAutoRev(this.checked)"> corriger automatiquement dès la clôture</label></p></div>`;
+  if (c && q) {
+    const g = grpOf(c.gid), rep = SEC.q[c.qid][0], cnt = [0, 0, 0, 0]; Object.keys(c.ans).forEach(p => cnt[c.ans[p].a]++);
+    const na = Object.keys(c.ans).length, waiting = Object.keys(G.pl).filter(p => !c.ans[p]).map(p => G.pl[p].n);
+    const rem = c.st === 'open' ? c.dur - (now() - c.t0) / 1000 : 0;
+    h += `<div class="card"><div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><h2>Diapo ${g.slide} · ${AC.esc(g.titre)} · question ${c.i + 1}/${g.qs.length} ${q.final ? '<span class="pill test">POINTS ×2</span>' : ''}</h2>
+     <div><span class="tag">${c.st === 'open' ? 'EN COURS' : c.st === 'closed' ? 'CLOSE' : 'CORRIGÉE'}</span> <b class="mono" style="font-size:1.4em" id="tm">${c.st === 'open' ? AC.fmtT(rem) : ''}</b></div></div>
+     ${c.st === 'open' ? `<div class="cable"><div id="cb" style="width:${Math.max(0, 100 * rem / c.dur)}%"></div></div>` : ''}
+     <p style="font-size:1.1em;margin:.6em 0"><b>${AC.esc(q.txt)}</b></p>${q.ctx ? `<pre class="ctx">${AC.esc(q.ctx)}</pre>` : ''}
+     ${q.opts.map((o, i) => `<div class="opt" style="--oc:${AC.LCOL[i]};cursor:default;${i === rep ? 'border-color:#3DFF9A' : ''}"><span class="lt">${AC.LET[i]}</span><span style="flex:1">${AC.esc(o)} ${i === rep ? '<b class="ok">✔ bonne réponse</b>' : ''}</span><b class="mono">${cnt[i]}</b></div>`).join('')}
+     <p class="muted"><b>${na} / ${nPl()}</b> réponses reçues${waiting.length && waiting.length <= 12 && c.st !== 'rev' ? ' · en attente : ' + waiting.map(AC.esc).join(', ') : ''}
+     ${c.st === 'open' ? ` · <button class="btn alt sm" onclick="window.plus()">+15 s</button>` : ''}</p>
+     ${c.st === 'rev' ? `<div class="card" style="background:#0a2a1e;border-color:#3DFF9A"><b>Explication envoyée aux joueurs :</b><br>${AC.esc(SEC.q[c.qid][1])}</div>` : ''}</div>`;
+  }
+  h += `<div class="card"><h2>Liaison avec le PowerPoint</h2><div style="display:flex;gap:14px;flex-wrap:wrap;align-items:center">
+   <label>Mode : <select onchange="window.setAuto(this.value)" style="background:#050A14;color:#E8F1FF;border:1px solid #1F3556;border-radius:8px;padding:5px"><option value="direct" ${G.auto === 'direct' ? 'selected' : ''}>Automatique (lance dès que la diapo apparaît)</option><option value="confirm" ${G.auto === 'confirm' ? 'selected' : ''}>Avec confirmation</option><option value="manual" ${G.auto === 'manual' ? 'selected' : ''}>Manuel</option></select></label>
+   <label>Je suis à la diapo n° <input id="sln" type="number" min="1" max="300" style="width:5em;background:#050A14;color:#E8F1FF;border:1px solid #1F3556;border-radius:8px;padding:5px" value="${AC.esc(ui.sl)}" onkeydown="if(event.key==='Enter')window.goSlide()"></label> <button class="btn alt sm" onclick="window.goSlide()">Aller</button>
+   <span class="muted">${G.slideSeen ? '🟢 macro PowerPoint détectée' : '⚪ macro non détectée (normal sur Mac)'}${G.lastSlide && G.lastSlide.gid ? ' · dernière diapo : ' + (grpOf(G.lastSlide.gid) ? grpOf(G.lastSlide.gid).slide : '?') : ''}</span></div></div>`;
+  const R = AC.rankList(G.pl).slice(0, 8);
+  h += `<div class="card"><h2>Classement (top 8)</h2>${lbTable(R, '')}</div>`;
+  h += `<div class="card"><button class="btn red sm" onclick="window.endSession()">Terminer la séance</button> <span class="muted">Affiche le podium final aux joueurs.</span></div>`;
+  return h;
+}
+window.primary = doPrimary;
+window.launchG = gid => launch(gid, 0);
+window.dismiss = () => { G.pend = null; commit(false); };
+window.setAuto = v => { G.auto = v; commit(false); };
+window.setAutoRev = v => { G.autoRev = !!v; commit(false); };
+window.plus = () => { if (G.cur && G.cur.st === 'open') { G.cur.dur += 15; commit(true); } };
+window.goSlide = () => {
+  const n = +($('sln').value); ui.sl = $('sln').value; const g = AC.PUB.groups.find(x => x.slide === n);
+  if (!g) { ui.note = 'Aucune question liée à la diapo ' + n + '.'; render(true); return; }
+  G.lastSlide = {n, gid:g.id, ts:now()};
+  if (G.auto === 'manual') { launch(g.id, 0); return; }
+  const free = !G.cur || G.cur.st === 'rev';
+  if (G.auto === 'direct' && free) launch(g.id, 0); else { G.pend = {gid:g.id}; commit(false); }
+};
+window.endSession = () => { if (!confirm('Terminer la séance et afficher le podium final aux joueurs ?')) return; G.ended = true; G.cur = null; commit(true); };
+
+function lbTable(R, meid) {
+  if (!R.length) return '<p class="muted">Aucun joueur connecté.</p>';
+  return `<table class="lb">${R.map((x, i) => `<tr class="${x.pid === meid ? 'me' : ''}"><td class="rk">${i + 1}</td><td>${AC.esc(x.n)}${G.test && x.bot ? ' <span class="tag">fictif</span>' : ''}</td><td class="muted">${x.ok} ✔ · ${AC.ms(x.tt)}</td><td class="pts">${x.pts}</td></tr>`).join('')}</table>`;
+}
+function startGuide() {
+  const u = joinUrl();
+  return `<div class="card" style="border-color:#3DFF9A"><h2>Mise en route : 4 étapes</h2>
+   <div style="display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start"><div style="width:190px;background:#fff;padding:8px;border-radius:10px">${qrSvg(u, 180)}</div>
+   <ol style="flex:1;min-width:260px;margin:0;padding-left:1.2em">
+    <li><b>Faites entrer les étudiants</b> : ils scannent ce QR code ou tapent l’adresse <span class="mono" style="color:#29D3FF;word-break:break-all">${AC.esc(u)}</span> <button class="btn alt sm" onclick="copyTxt('${AC.esc(u)}')">Copier</button>, puis saisissent un pseudo. <b>${nPl()}</b> connecté${nPl() > 1 ? 's' : ''} (30 maximum recommandé).</li>
+    <li><b>Projetez votre PowerPoint</b> en diaporama sur le vidéoprojecteur ; gardez cette tour de contrôle sur l’écran de votre PC.</li>
+    <li><b>Liez les diapos aux questions</b> : sous Windows, lancez le diaporama avec la macro (elle demande le code <b class="mono">${G.sid}</b>) ; sinon tapez le numéro de diapo ci-dessous, ou utilisez le bouton vert. Détail dans l’onglet Guide.</li>
+    <li><b>Optionnel</b> : ouvrez « le classement projeté » dans une seconde fenêtre pour l’afficher entre deux exercices.</li></ol></div></div>`;
+}
+function questTab() {
+  let h = `<p class="muted">Toutes les questions, dans l’ordre du cours. ✔ = déjà jouée. Lancer un groupe l’envoie immédiatement aux joueurs.</p>`;
+  let chap = '';
+  AC.PUB.groups.forEach(g => {
+    if (g.chap !== chap) { chap = g.chap; h += `<h2 style="margin-top:14px;color:#29D3FF">${AC.esc(chap)}</h2>`; }
+    const open = ui.open[g.id], done = G.played[g.id];
+    h += `<div class="card" style="padding:10px 14px"><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span class="tag">diapo ${g.slide}</span><b style="flex:1;min-width:200px">${done ? '✔ ' : ''}${AC.esc(g.titre)}</b><span class="muted">${g.qs.length} question${g.qs.length > 1 ? 's' : ''}</span>
+     <button class="btn sm ${done ? 'alt' : 'go'}" onclick="window.launchGC('${g.id}')">${done ? '↻ Relancer' : '▶ Lancer'}</button><button class="btn alt sm" onclick="window.toggle('${g.id}')">${open ? '▲' : '▼'}</button></div>
+     ${open ? g.qs.map((qid, i) => { const q = AC.q(qid); return `<div style="margin:6px 0 0 4px;display:flex;gap:8px;align-items:center"><span class="tag">${i + 1}</span><span style="flex:1">${AC.esc(q.txt)}</span>${G.qdone[qid] ? '<span class="ok">✔</span>' : ''}<button class="btn alt sm" onclick="window.launchQ('${g.id}',${i})">▶</button></div>`; }).join('') : ''}</div>`;
+  });
+  return h;
+}
+window.toggle = id => { ui.open[id] = !ui.open[id]; render(true); };
+function confirmFree() { return !G.cur || G.cur.st === 'rev' || confirm('Une question est en cours. La remplacer ?'); }
+window.launchGC = gid => { if (confirmFree()) launch(gid, 0); };
+window.launchQ = (gid, i) => { if (confirmFree()) launch(gid, i); };
+function rankTab() {
+  const R = AC.rankList(G.pl);
+  return `<div class="card"><h2>Classement complet</h2><p class="muted">Points, puis en cas d’égalité : le temps cumulé le plus court sur les bonnes réponses.</p>${lbTable(R, '')}</div>`;
+}
+function corrTab() {
+  let h = `<p class="muted">Corrigés détaillés (visibles seulement ici, avec votre code). Bonne réponse en vert.</p>`, chap = '';
+  AC.PUB.groups.forEach(g => {
+    if (g.chap !== chap) { chap = g.chap; h += `<h2 style="margin-top:14px;color:#29D3FF">${AC.esc(chap)}</h2>`; }
+    h += `<div class="card"><b>Diapo ${g.slide} · ${AC.esc(g.titre)}</b>` + g.qs.map(qid => { const q = AC.q(qid), s = SEC.q[qid];
+      return `<div style="margin:10px 0;padding-top:8px;border-top:1px solid #1F3556"><b>${AC.esc(q.txt)}</b> <span class="tag">${qid} · ${q.t} s${q.final ? ' · ×2' : ''}</span>${q.ctx ? `<pre class="ctx">${AC.esc(q.ctx)}</pre>` : ''}
+       ${q.opts.map((o, i) => `<div style="margin:2px 0;${i === s[0] ? 'color:#3DFF9A;font-weight:700' : 'color:#C9D8F2'}">${AC.LET[i]}. ${AC.esc(o)}${i === s[0] ? ' ✔' : ''}</div>`).join('')}<p class="muted">${AC.esc(s[1])}</p></div>`; }).join('') + '</div>';
+  });
+  return h;
+}
+function guideTab() {
+  return `<div class="card"><h2>Avant la séance</h2><ol><li>Ouvrez cette tour de contrôle sur <b>votre PC personnel</b>, saisissez votre code, <b>créez la séance</b> (le mode test est coché par défaut : décochez-le le jour J).</li>
+   <li>Faites entrer les étudiants (QR code ou adresse). 30 joueurs maximum.</li><li>Ouvrez le PowerPoint en diaporama.</li></ol></div>
+   <div class="card"><h2>Lier le PowerPoint (Windows, une seule fois)</h2><ol>
+   <li>Ouvrez <b>le PowerPoint étiqueté</b> fourni avec l’application. Appuyez sur Alt+F11, menu Fichier, Importer un fichier, choisissez <b>LANLive_macro.bas</b>, puis fermez la fenêtre.</li>
+   <li>Enregistrez sous le type « Présentation PowerPoint avec macros (.pptm) ».</li>
+   <li>Pour lancer le diaporama : Alt+F8, choisissez <b>LancerLANLive</b>, Exécuter. La macro demande le <b>code de séance</b> (affiché en haut à droite de la tour de contrôle).</li>
+   <li>Ensuite, chaque fois que vous arrivez sur une diapo qui porte une question, la tour de contrôle la reçoit et, en mode automatique, la lance.</li></ol>
+   <p class="muted">Sous Mac, ou si les macros sont bloquées : tapez le numéro de diapo dans « Je suis à la diapo n° » puis Entrée, ou utilisez le grand bouton vert (touche Espace).</p></div>
+   <div class="card"><h2>Pendant la séance</h2><ul><li>Le grand bouton vert enchaîne : clore, corriger, question suivante.</li>
+   <li>Points : ${AC.BASE} par bonne réponse + jusqu’à ${AC.SPEED} de bonus de rapidité + ${AC.STREAK} par bonne réponse consécutive (jusqu’à ${AC.STREAKMAX}) ; la question finale vaut le double. À égalité : le temps cumulé le plus court départage.</li>
+   <li>Le chrono est propre à chaque question ; « +15 s » le prolonge ; la question se clôt aussi quand tous ont répondu.</li>
+   <li>Une diapo déjà jouée ne relance pas la question si vous revenez en arrière : utilisez « Relancer » dans l’onglet Questions.</li>
+   <li>Terminez par « Terminer la séance » (podium) puis « Exporter CSV » : deux fichiers (classement et détail).</li></ul></div>
+   <div class="card"><h2>En cas de problème</h2><ul><li>Rechargez la page : la séance reprend sur ce PC (le code enseignant est redemandé).</li><li>Un étudiant qui se déconnecte revient par le même lien : il retrouve son score.</li>
+   <li>Le relais public ntfy.sh limite le débit : si 30 étudiants se connectent derrière la même adresse Wi-Fi, l’affichage peut avoir quelques secondes de retard.</li></ul></div>`;
+}
+</script></body></html>
