@@ -1,5 +1,5 @@
 <!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>LAN Live · joueur</title><style>
-:root{--bg:#060B16;--bg2:#0A1326;--pn:#0E1A33;--pn2:#13233F;--ln:#1F3556;--tx:#E8F1FF;--mu:#8FA6C8;--cy:#29D3FF;--gr:#3DFF9A;--am:#FFB020;--rd:#FF4D6A;--mg:#D946EF;--a:#3B82F6;--b:#22C55E;--c:#F59E0B;--d:#D946EF}
+:root{--bg:#060B16;--bg2:#0A1326;--pn:#0E1A33;--pn2:#13233F;--ln:#1F3556;--tx:#E8F1FF;--mu:#8FA6C8;--cy:#29D3FF;--gr:#56B4E9;--am:#F0E442;--rd:#FF8A3D;--mg:#D946EF;--a:#3B82F6;--b:#F0E442;--c:#E8710A;--d:#D946EF}
 *{box-sizing:border-box}
 html{background:var(--bg)}
 body{margin:0;min-height:100vh;color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.45;
@@ -14,15 +14,15 @@ h1,h2,h3{margin:0 0 .4em;font-family:ui-monospace,"Cascadia Code",Consolas,Menlo
 button,select,input,textarea{font:inherit}
 .btn{border:1px solid var(--cy);border-radius:10px;padding:.7em 1.15em;font-weight:700;background:linear-gradient(180deg,#123a63,#0c2a4a);color:var(--tx);cursor:pointer;transition:.15s}
 .btn:hover{box-shadow:0 0 0 3px #29d3ff33}.btn:disabled{opacity:.4;cursor:not-allowed;box-shadow:none}
-.btn.go{background:linear-gradient(180deg,#14c277,#0b8f56);border-color:var(--gr);color:#031a0e}
-.btn.alt{background:var(--pn2);border-color:var(--ln);color:var(--tx)}.btn.red{background:linear-gradient(180deg,#b3263f,#85182c);border-color:var(--rd)}
+.btn.go{background:linear-gradient(180deg,#3FA2DB,#1F6EA6);border-color:var(--gr);color:#031422}
+.btn.alt{background:var(--pn2);border-color:var(--ln);color:var(--tx)}.btn.red{background:linear-gradient(180deg,#C45A00,#8F3F00);border-color:var(--rd)}
 .btn.sm{padding:.35em .75em;font-size:.85em;border-radius:8px}.btn.xl{font-size:1.25em;padding:.9em 1.4em;width:100%}
 .card{background:linear-gradient(180deg,var(--pn),var(--bg2));border:1px solid var(--ln);border-radius:14px;padding:14px 16px;margin-bottom:12px;box-shadow:0 8px 30px #0006}
 .card h2{color:var(--cy);font-size:1.05em;text-transform:uppercase}
 .muted{color:var(--mu);font-size:.9em}.ok{color:var(--gr);font-weight:700}.ko{color:var(--rd);font-weight:700}
 .tag{display:inline-block;border-radius:99px;padding:.1em .7em;font-size:.78em;font-weight:700;background:var(--pn2);border:1px solid var(--ln);color:var(--mu)}
 .pill{display:inline-block;border-radius:99px;padding:.15em .8em;font-weight:800;font-size:.8em}
-.pill.test{background:var(--am);color:#1b1100}.pill.live{background:var(--rd);color:#fff}
+.pill.test{background:var(--am);color:#1b1100}.pill.live{background:var(--rd);color:#1b0a00}
 table{border-collapse:collapse;width:100%}th,td{padding:6px 8px;border-bottom:1px solid var(--ln);text-align:left;vertical-align:top}th{font-size:.75em;color:var(--mu);text-transform:uppercase;letter-spacing:.06em}
 pre.ctx{margin:.5em 0;padding:10px 12px;background:#050A14;border:1px solid var(--ln);border-left:3px solid var(--cy);border-radius:8px;color:#BDEBFF;font:13px/1.5 ui-monospace,"Cascadia Code",Consolas,Menlo,monospace;white-space:pre-wrap;overflow-x:auto}
 .ports{display:inline-flex;gap:3px;vertical-align:middle}.ports i{width:9px;height:9px;border-radius:2px;background:var(--gr);box-shadow:0 0 6px var(--gr);animation:blink 1.6s var(--d) infinite}
@@ -31,7 +31,7 @@ pre.ctx{margin:.5em 0;padding:10px 12px;background:#050A14;border:1px solid var(
 .opt:hover{border-color:var(--oc)}
 .opt .lt{flex:0 0 auto;display:flex;align-items:center;justify-content:center;width:2.4em;height:2.4em;border-radius:7px;background:var(--oc);color:#04101f;font:800 1.1em ui-monospace,Consolas,monospace;box-shadow:inset 0 -3px 0 #0003,0 0 0 3px #0000}
 .opt.sel{border-color:var(--oc);box-shadow:0 0 0 3px color-mix(in srgb,var(--oc) 35%,transparent);background:linear-gradient(180deg,#183052,#10223d)}
-.opt.good{border-color:var(--gr);background:linear-gradient(180deg,#0f3b2a,#0a2a1e)}.opt.bad{border-color:var(--rd);background:linear-gradient(180deg,#43151f,#2b0e15)}
+.opt.good{border-color:var(--gr);background:linear-gradient(180deg,#0f2f45,#0a2133)}.opt.bad{border-color:var(--rd);background:linear-gradient(180deg,#45280a,#2b1806)}
 .opt.dim{opacity:.55}.opt:disabled{cursor:default}
 .cable{height:8px;border-radius:99px;background:#0b1730;border:1px solid var(--ln);overflow:hidden}.cable>div{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--gr),var(--cy));transition:width .4s linear}
 .cable.low>div{background:linear-gradient(90deg,var(--am),var(--rd))}
@@ -42,7 +42,7 @@ pre.ctx{margin:.5em 0;padding:10px 12px;background:#050A14;border:1px solid var(
 .bar{display:inline-block;height:14px;border-radius:3px;vertical-align:middle}
 .fxbar{position:fixed;left:0;right:0;bottom:0;z-index:60;display:flex;gap:8px;justify-content:center;padding:8px 10px;background:#060B16f2;border-top:1px solid var(--ln)}
 .fxbar .btn{flex:1;max-width:260px;padding:.55em .8em;font-size:.95em}
-.fxbar .btn.on{background:linear-gradient(180deg,#14c277,#0b8f56);color:#031a0e;border-color:var(--gr)}
+.fxbar .btn.on{background:linear-gradient(180deg,#3FA2DB,#1F6EA6);color:#031422;border-color:var(--gr)}
 .sheet{position:fixed;inset:0 0 54px 0;z-index:50;overflow:auto;background:#060B16;padding:14px 16px}
 .sheet h3{color:var(--cy);margin:1em 0 .3em;font-size:1em}.sheet ul{padding-left:1.2em;margin:.3em 0}.sheet li{margin:.25em 0}
 body{max-width:760px;margin:0 auto}</style></head><body><div id="app" class="wrap"></div><script>/* © 2026 SAS BELM DEVELOPPEMENT. Tous droits réservés.  LAN Live : application d'interaction (jeu 22), cours « Sécurité des accès ». */
@@ -50,7 +50,7 @@ body{max-width:760px;margin:0 auto}</style></head><body><div id="app" class="wra
 const AC = {};
 AC.DEFAULT_RELAY = 'https://ntfy.sh';
 AC.LET = ['A', 'B', 'C', 'D'];
-AC.LCOL = ['#3B82F6', '#22C55E', '#F59E0B', '#D946EF'];   // A à D : couleurs de VLAN 10, 20, 30, 40
+AC.LCOL = ['#3B82F6', '#F0E442', '#E8710A', '#D946EF'];   // A à D : couleurs de VLAN 10, 20, 30, 40
 AC.VLAN = [10, 20, 30, 40];
 AC.BASE = 100; AC.SPEED = 50; AC.STREAK = 10; AC.STREAKMAX = 5;
 AC.LATE = 0.5; AC.GRACE = 1500;   // réponse tardive (après le chrono) : moitié des points de base, sans bonus ; tolérance de 1,5 s pour le réseau
@@ -96,7 +96,7 @@ AC.Relay.prototype._wsOpen = function () {
     const s = this._subs[m.t]; if (!s) return;
     s.last = m.id;
     let o; try { o = JSON.parse(m.m); } catch (x) { return; }
-    s.cb(o, m.t === this.tS && m.ts ? {time: m.ts / 1000} : undefined);   // sujet diapos : horodatage serveur (pour ignorer les diapos d'avant l'ouverture)
+    s.cb(o, m.t === this.tS && m.ts ? {time: m.ts / 1000, ws: true} : undefined);   // sujet diapos : horodatage serveur (pour ignorer les diapos d'avant l'ouverture)
   };
   const end = () => {
     if (closed) return; closed = true; clearInterval(ping);
@@ -204,7 +204,7 @@ AC.Assembler = function (cb) {
 /* ---------------- Habillage : salle réseau / supervision ---------------- */
 AC.PORTS = n => '<span class="ports">' + Array.from({length:n}, (_, i) => `<i style="--d:${(i * 0.13).toFixed(2)}s"></i>`).join('') + '</span>';
 AC.CSS = `
-:root{--bg:#060B16;--bg2:#0A1326;--pn:#0E1A33;--pn2:#13233F;--ln:#1F3556;--tx:#E8F1FF;--mu:#8FA6C8;--cy:#29D3FF;--gr:#3DFF9A;--am:#FFB020;--rd:#FF4D6A;--mg:#D946EF;--a:#3B82F6;--b:#22C55E;--c:#F59E0B;--d:#D946EF}
+:root{--bg:#060B16;--bg2:#0A1326;--pn:#0E1A33;--pn2:#13233F;--ln:#1F3556;--tx:#E8F1FF;--mu:#8FA6C8;--cy:#29D3FF;--gr:#56B4E9;--am:#F0E442;--rd:#FF8A3D;--mg:#D946EF;--a:#3B82F6;--b:#F0E442;--c:#E8710A;--d:#D946EF}
 *{box-sizing:border-box}
 html{background:var(--bg)}
 body{margin:0;min-height:100vh;color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.45;
@@ -219,15 +219,15 @@ h1,h2,h3{margin:0 0 .4em;font-family:ui-monospace,"Cascadia Code",Consolas,Menlo
 button,select,input,textarea{font:inherit}
 .btn{border:1px solid var(--cy);border-radius:10px;padding:.7em 1.15em;font-weight:700;background:linear-gradient(180deg,#123a63,#0c2a4a);color:var(--tx);cursor:pointer;transition:.15s}
 .btn:hover{box-shadow:0 0 0 3px #29d3ff33}.btn:disabled{opacity:.4;cursor:not-allowed;box-shadow:none}
-.btn.go{background:linear-gradient(180deg,#14c277,#0b8f56);border-color:var(--gr);color:#031a0e}
-.btn.alt{background:var(--pn2);border-color:var(--ln);color:var(--tx)}.btn.red{background:linear-gradient(180deg,#b3263f,#85182c);border-color:var(--rd)}
+.btn.go{background:linear-gradient(180deg,#3FA2DB,#1F6EA6);border-color:var(--gr);color:#031422}
+.btn.alt{background:var(--pn2);border-color:var(--ln);color:var(--tx)}.btn.red{background:linear-gradient(180deg,#C45A00,#8F3F00);border-color:var(--rd)}
 .btn.sm{padding:.35em .75em;font-size:.85em;border-radius:8px}.btn.xl{font-size:1.25em;padding:.9em 1.4em;width:100%}
 .card{background:linear-gradient(180deg,var(--pn),var(--bg2));border:1px solid var(--ln);border-radius:14px;padding:14px 16px;margin-bottom:12px;box-shadow:0 8px 30px #0006}
 .card h2{color:var(--cy);font-size:1.05em;text-transform:uppercase}
 .muted{color:var(--mu);font-size:.9em}.ok{color:var(--gr);font-weight:700}.ko{color:var(--rd);font-weight:700}
 .tag{display:inline-block;border-radius:99px;padding:.1em .7em;font-size:.78em;font-weight:700;background:var(--pn2);border:1px solid var(--ln);color:var(--mu)}
 .pill{display:inline-block;border-radius:99px;padding:.15em .8em;font-weight:800;font-size:.8em}
-.pill.test{background:var(--am);color:#1b1100}.pill.live{background:var(--rd);color:#fff}
+.pill.test{background:var(--am);color:#1b1100}.pill.live{background:var(--rd);color:#1b0a00}
 table{border-collapse:collapse;width:100%}th,td{padding:6px 8px;border-bottom:1px solid var(--ln);text-align:left;vertical-align:top}th{font-size:.75em;color:var(--mu);text-transform:uppercase;letter-spacing:.06em}
 pre.ctx{margin:.5em 0;padding:10px 12px;background:#050A14;border:1px solid var(--ln);border-left:3px solid var(--cy);border-radius:8px;color:#BDEBFF;font:13px/1.5 ui-monospace,"Cascadia Code",Consolas,Menlo,monospace;white-space:pre-wrap;overflow-x:auto}
 .ports{display:inline-flex;gap:3px;vertical-align:middle}.ports i{width:9px;height:9px;border-radius:2px;background:var(--gr);box-shadow:0 0 6px var(--gr);animation:blink 1.6s var(--d) infinite}
@@ -236,7 +236,7 @@ pre.ctx{margin:.5em 0;padding:10px 12px;background:#050A14;border:1px solid var(
 .opt:hover{border-color:var(--oc)}
 .opt .lt{flex:0 0 auto;display:flex;align-items:center;justify-content:center;width:2.4em;height:2.4em;border-radius:7px;background:var(--oc);color:#04101f;font:800 1.1em ui-monospace,Consolas,monospace;box-shadow:inset 0 -3px 0 #0003,0 0 0 3px #0000}
 .opt.sel{border-color:var(--oc);box-shadow:0 0 0 3px color-mix(in srgb,var(--oc) 35%,transparent);background:linear-gradient(180deg,#183052,#10223d)}
-.opt.good{border-color:var(--gr);background:linear-gradient(180deg,#0f3b2a,#0a2a1e)}.opt.bad{border-color:var(--rd);background:linear-gradient(180deg,#43151f,#2b0e15)}
+.opt.good{border-color:var(--gr);background:linear-gradient(180deg,#0f2f45,#0a2133)}.opt.bad{border-color:var(--rd);background:linear-gradient(180deg,#45280a,#2b1806)}
 .opt.dim{opacity:.55}.opt:disabled{cursor:default}
 .cable{height:8px;border-radius:99px;background:#0b1730;border:1px solid var(--ln);overflow:hidden}.cable>div{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--gr),var(--cy));transition:width .4s linear}
 .cable.low>div{background:linear-gradient(90deg,var(--am),var(--rd))}
@@ -247,7 +247,7 @@ pre.ctx{margin:.5em 0;padding:10px 12px;background:#050A14;border:1px solid var(
 .bar{display:inline-block;height:14px;border-radius:3px;vertical-align:middle}
 .fxbar{position:fixed;left:0;right:0;bottom:0;z-index:60;display:flex;gap:8px;justify-content:center;padding:8px 10px;background:#060B16f2;border-top:1px solid var(--ln)}
 .fxbar .btn{flex:1;max-width:260px;padding:.55em .8em;font-size:.95em}
-.fxbar .btn.on{background:linear-gradient(180deg,#14c277,#0b8f56);color:#031a0e;border-color:var(--gr)}
+.fxbar .btn.on{background:linear-gradient(180deg,#3FA2DB,#1F6EA6);color:#031422;border-color:var(--gr)}
 .sheet{position:fixed;inset:0 0 54px 0;z-index:50;overflow:auto;background:#060B16;padding:14px 16px}
 .sheet h3{color:var(--cy);margin:1em 0 .3em;font-size:1em}.sheet ul{padding-left:1.2em;margin:.3em 0}.sheet li{margin:.25em 0}
 `;
@@ -307,7 +307,7 @@ function remaining() { if (!pub || !pub.cur || pub.cur.st !== 'open') return 0; 
 function lateLabel(ch) { return ch === undefined ? 'Temps écoulé : vous pouvez encore répondre (½ points)' : 'Valider ma réponse : ' + AC.LET[ch] + ' · tardive, ½ points'; }
 setInterval(() => {
   const r = remaining(), t = $('tmr'), cb = $('cb');
-  if (t && pub && pub.cur && pub.cur.st === 'open') { t.textContent = r >= 0 ? AC.fmtT(r) : '+' + AC.fmtT(-r); t.style.color = r < 0 ? '#FF4D6A' : ''; if (cb) { cb.style.width = Math.max(0, 100 * r / pub.cur.dur) + '%'; cb.parentNode.className = 'cable' + (r < 8 ? ' low' : ''); }
+  if (t && pub && pub.cur && pub.cur.st === 'open') { t.textContent = r >= 0 ? AC.fmtT(r) : '+' + AC.fmtT(-r); t.style.color = r < 0 ? '#FF8A3D' : ''; if (cb) { cb.style.width = Math.max(0, 100 * r / pub.cur.dur) + '%'; cb.parentNode.className = 'cable' + (r < 8 ? ' low' : ''); }
     const b = $('vb'); if (b && r <= 0) b.textContent = lateLabel(draft[key()]);
     const lt = $('lt'); if (lt) lt.style.display = r <= 0 ? 'block' : 'none'; }
   if (me.n && pub && !myRec() && Date.now() - lastJoin > 6000) { lastJoin = Date.now(); send({k:'J', n:me.n}); }   // le PC enseignant ne nous connaît pas encore : on se représente
@@ -348,8 +348,8 @@ function qView() {
     if (!R) h += `<p class="muted" style="margin-top:10px">Vous n’aviez pas encore rejoint la séance pour cette question.</p>`;
     else {
       const now_ = myRec() ? myRec()[0] : null, mv = R[7] && now_ ? R[7] - now_ : 0;
-      h += R[2] ? `<div class="card" style="background:#0a2a1e;border-color:#3DFF9A;margin-top:10px"><b class="ok" style="font-size:1.2em">Bonne réponse ! <span class="gain">+${R[1]} pts</span></b><div class="muted">${R[8] ? `Réponse tardive : ${R[3]} points de base (moitié), sans bonus de rapidité ni de série${R[6] > 1 ? ' → ×' + R[6] : ''}` : `${R[3]} de base + ${R[4]} de rapidité + ${R[5]} de série${R[6] > 1 ? ' → ×' + R[6] : ''}`}</div></div>`
-        : `<div class="card" style="background:#2b0e15;border-color:#FF4D6A;margin-top:10px"><b class="ko" style="font-size:1.2em">${R[0] < 0 ? 'Pas de réponse' : 'Mauvaise réponse'} · 0 pt</b><div class="muted">Votre série repart de zéro.</div></div>`;
+      h += R[2] ? `<div class="card" style="background:#0a2133;border-color:#56B4E9;margin-top:10px"><b class="ok" style="font-size:1.2em">Bonne réponse ! <span class="gain">+${R[1]} pts</span></b><div class="muted">${R[8] ? `Réponse tardive : ${R[3]} points de base (moitié), sans bonus de rapidité ni de série${R[6] > 1 ? ' → ×' + R[6] : ''}` : `${R[3]} de base + ${R[4]} de rapidité + ${R[5]} de série${R[6] > 1 ? ' → ×' + R[6] : ''}`}</div></div>`
+        : `<div class="card" style="background:#2b1806;border-color:#FF8A3D;margin-top:10px"><b class="ko" style="font-size:1.2em">${R[0] < 0 ? 'Pas de réponse' : 'Mauvaise réponse'} · 0 pt</b><div class="muted">Votre série repart de zéro.</div></div>`;
       if (now_) h += `<p class="muted">Rang ${now_}${mv > 0 ? ' · ▲ +' + mv : mv < 0 ? ' · ▼ ' + mv : ' · ='}</p>`;
     }
     h += `<div class="card" style="margin-top:8px"><h2>Explication</h2><p style="margin:0">${AC.esc(pub.rev.exp)}</p></div>`;

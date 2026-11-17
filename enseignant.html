@@ -1,5 +1,5 @@
 <!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>LAN Live · tour de contrôle</title><style>
-:root{--bg:#060B16;--bg2:#0A1326;--pn:#0E1A33;--pn2:#13233F;--ln:#1F3556;--tx:#E8F1FF;--mu:#8FA6C8;--cy:#29D3FF;--gr:#3DFF9A;--am:#FFB020;--rd:#FF4D6A;--mg:#D946EF;--a:#3B82F6;--b:#22C55E;--c:#F59E0B;--d:#D946EF}
+:root{--bg:#060B16;--bg2:#0A1326;--pn:#0E1A33;--pn2:#13233F;--ln:#1F3556;--tx:#E8F1FF;--mu:#8FA6C8;--cy:#29D3FF;--gr:#56B4E9;--am:#F0E442;--rd:#FF8A3D;--mg:#D946EF;--a:#3B82F6;--b:#F0E442;--c:#E8710A;--d:#D946EF}
 *{box-sizing:border-box}
 html{background:var(--bg)}
 body{margin:0;min-height:100vh;color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.45;
@@ -14,15 +14,15 @@ h1,h2,h3{margin:0 0 .4em;font-family:ui-monospace,"Cascadia Code",Consolas,Menlo
 button,select,input,textarea{font:inherit}
 .btn{border:1px solid var(--cy);border-radius:10px;padding:.7em 1.15em;font-weight:700;background:linear-gradient(180deg,#123a63,#0c2a4a);color:var(--tx);cursor:pointer;transition:.15s}
 .btn:hover{box-shadow:0 0 0 3px #29d3ff33}.btn:disabled{opacity:.4;cursor:not-allowed;box-shadow:none}
-.btn.go{background:linear-gradient(180deg,#14c277,#0b8f56);border-color:var(--gr);color:#031a0e}
-.btn.alt{background:var(--pn2);border-color:var(--ln);color:var(--tx)}.btn.red{background:linear-gradient(180deg,#b3263f,#85182c);border-color:var(--rd)}
+.btn.go{background:linear-gradient(180deg,#3FA2DB,#1F6EA6);border-color:var(--gr);color:#031422}
+.btn.alt{background:var(--pn2);border-color:var(--ln);color:var(--tx)}.btn.red{background:linear-gradient(180deg,#C45A00,#8F3F00);border-color:var(--rd)}
 .btn.sm{padding:.35em .75em;font-size:.85em;border-radius:8px}.btn.xl{font-size:1.25em;padding:.9em 1.4em;width:100%}
 .card{background:linear-gradient(180deg,var(--pn),var(--bg2));border:1px solid var(--ln);border-radius:14px;padding:14px 16px;margin-bottom:12px;box-shadow:0 8px 30px #0006}
 .card h2{color:var(--cy);font-size:1.05em;text-transform:uppercase}
 .muted{color:var(--mu);font-size:.9em}.ok{color:var(--gr);font-weight:700}.ko{color:var(--rd);font-weight:700}
 .tag{display:inline-block;border-radius:99px;padding:.1em .7em;font-size:.78em;font-weight:700;background:var(--pn2);border:1px solid var(--ln);color:var(--mu)}
 .pill{display:inline-block;border-radius:99px;padding:.15em .8em;font-weight:800;font-size:.8em}
-.pill.test{background:var(--am);color:#1b1100}.pill.live{background:var(--rd);color:#fff}
+.pill.test{background:var(--am);color:#1b1100}.pill.live{background:var(--rd);color:#1b0a00}
 table{border-collapse:collapse;width:100%}th,td{padding:6px 8px;border-bottom:1px solid var(--ln);text-align:left;vertical-align:top}th{font-size:.75em;color:var(--mu);text-transform:uppercase;letter-spacing:.06em}
 pre.ctx{margin:.5em 0;padding:10px 12px;background:#050A14;border:1px solid var(--ln);border-left:3px solid var(--cy);border-radius:8px;color:#BDEBFF;font:13px/1.5 ui-monospace,"Cascadia Code",Consolas,Menlo,monospace;white-space:pre-wrap;overflow-x:auto}
 .ports{display:inline-flex;gap:3px;vertical-align:middle}.ports i{width:9px;height:9px;border-radius:2px;background:var(--gr);box-shadow:0 0 6px var(--gr);animation:blink 1.6s var(--d) infinite}
@@ -31,7 +31,7 @@ pre.ctx{margin:.5em 0;padding:10px 12px;background:#050A14;border:1px solid var(
 .opt:hover{border-color:var(--oc)}
 .opt .lt{flex:0 0 auto;display:flex;align-items:center;justify-content:center;width:2.4em;height:2.4em;border-radius:7px;background:var(--oc);color:#04101f;font:800 1.1em ui-monospace,Consolas,monospace;box-shadow:inset 0 -3px 0 #0003,0 0 0 3px #0000}
 .opt.sel{border-color:var(--oc);box-shadow:0 0 0 3px color-mix(in srgb,var(--oc) 35%,transparent);background:linear-gradient(180deg,#183052,#10223d)}
-.opt.good{border-color:var(--gr);background:linear-gradient(180deg,#0f3b2a,#0a2a1e)}.opt.bad{border-color:var(--rd);background:linear-gradient(180deg,#43151f,#2b0e15)}
+.opt.good{border-color:var(--gr);background:linear-gradient(180deg,#0f2f45,#0a2133)}.opt.bad{border-color:var(--rd);background:linear-gradient(180deg,#45280a,#2b1806)}
 .opt.dim{opacity:.55}.opt:disabled{cursor:default}
 .cable{height:8px;border-radius:99px;background:#0b1730;border:1px solid var(--ln);overflow:hidden}.cable>div{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--gr),var(--cy));transition:width .4s linear}
 .cable.low>div{background:linear-gradient(90deg,var(--am),var(--rd))}
@@ -42,7 +42,7 @@ pre.ctx{margin:.5em 0;padding:10px 12px;background:#050A14;border:1px solid var(
 .bar{display:inline-block;height:14px;border-radius:3px;vertical-align:middle}
 .fxbar{position:fixed;left:0;right:0;bottom:0;z-index:60;display:flex;gap:8px;justify-content:center;padding:8px 10px;background:#060B16f2;border-top:1px solid var(--ln)}
 .fxbar .btn{flex:1;max-width:260px;padding:.55em .8em;font-size:.95em}
-.fxbar .btn.on{background:linear-gradient(180deg,#14c277,#0b8f56);color:#031a0e;border-color:var(--gr)}
+.fxbar .btn.on{background:linear-gradient(180deg,#3FA2DB,#1F6EA6);color:#031422;border-color:var(--gr)}
 .sheet{position:fixed;inset:0 0 54px 0;z-index:50;overflow:auto;background:#060B16;padding:14px 16px}
 .sheet h3{color:var(--cy);margin:1em 0 .3em;font-size:1em}.sheet ul{padding-left:1.2em;margin:.3em 0}.sheet li{margin:.25em 0}
 body{max-width:1100px;margin:0 auto;padding:10px}</style></head><body><div id="lock" class="card wrap" style="max-width:420px;margin:60px auto"><h2>Tour de contrôle</h2><p>Ouvrez cette page avec votre <b>lien secret</b> (il contient la clé). À défaut, collez la clé ici :</p><input id="code" type="password" style="width:100%;padding:10px;background:#050A14;color:#E8F1FF;border:1px solid #1F3556;border-radius:8px" onkeydown="if(event.key==='Enter')doUnlock()"><p id="uerr" class="ko"></p><button class="btn go" onclick="doUnlock()">Entrer</button><p class="muted">La clé déchiffre les corrigés ; elle n’est jamais envoyée aux joueurs ni au serveur (elle reste après le #).</p></div><div id="app" style="display:none"></div><script>/* © 2026 SAS BELM DEVELOPPEMENT. Tous droits réservés.  LAN Live : application d'interaction (jeu 22), cours « Sécurité des accès ». */
@@ -50,7 +50,7 @@ body{max-width:1100px;margin:0 auto;padding:10px}</style></head><body><div id="l
 const AC = {};
 AC.DEFAULT_RELAY = 'https://ntfy.sh';
 AC.LET = ['A', 'B', 'C', 'D'];
-AC.LCOL = ['#3B82F6', '#22C55E', '#F59E0B', '#D946EF'];   // A à D : couleurs de VLAN 10, 20, 30, 40
+AC.LCOL = ['#3B82F6', '#F0E442', '#E8710A', '#D946EF'];   // A à D : couleurs de VLAN 10, 20, 30, 40
 AC.VLAN = [10, 20, 30, 40];
 AC.BASE = 100; AC.SPEED = 50; AC.STREAK = 10; AC.STREAKMAX = 5;
 AC.LATE = 0.5; AC.GRACE = 1500;   // réponse tardive (après le chrono) : moitié des points de base, sans bonus ; tolérance de 1,5 s pour le réseau
@@ -96,7 +96,7 @@ AC.Relay.prototype._wsOpen = function () {
     const s = this._subs[m.t]; if (!s) return;
     s.last = m.id;
     let o; try { o = JSON.parse(m.m); } catch (x) { return; }
-    s.cb(o, m.t === this.tS && m.ts ? {time: m.ts / 1000} : undefined);   // sujet diapos : horodatage serveur (pour ignorer les diapos d'avant l'ouverture)
+    s.cb(o, m.t === this.tS && m.ts ? {time: m.ts / 1000, ws: true} : undefined);   // sujet diapos : horodatage serveur (pour ignorer les diapos d'avant l'ouverture)
   };
   const end = () => {
     if (closed) return; closed = true; clearInterval(ping);
@@ -204,7 +204,7 @@ AC.Assembler = function (cb) {
 /* ---------------- Habillage : salle réseau / supervision ---------------- */
 AC.PORTS = n => '<span class="ports">' + Array.from({length:n}, (_, i) => `<i style="--d:${(i * 0.13).toFixed(2)}s"></i>`).join('') + '</span>';
 AC.CSS = `
-:root{--bg:#060B16;--bg2:#0A1326;--pn:#0E1A33;--pn2:#13233F;--ln:#1F3556;--tx:#E8F1FF;--mu:#8FA6C8;--cy:#29D3FF;--gr:#3DFF9A;--am:#FFB020;--rd:#FF4D6A;--mg:#D946EF;--a:#3B82F6;--b:#22C55E;--c:#F59E0B;--d:#D946EF}
+:root{--bg:#060B16;--bg2:#0A1326;--pn:#0E1A33;--pn2:#13233F;--ln:#1F3556;--tx:#E8F1FF;--mu:#8FA6C8;--cy:#29D3FF;--gr:#56B4E9;--am:#F0E442;--rd:#FF8A3D;--mg:#D946EF;--a:#3B82F6;--b:#F0E442;--c:#E8710A;--d:#D946EF}
 *{box-sizing:border-box}
 html{background:var(--bg)}
 body{margin:0;min-height:100vh;color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.45;
@@ -219,15 +219,15 @@ h1,h2,h3{margin:0 0 .4em;font-family:ui-monospace,"Cascadia Code",Consolas,Menlo
 button,select,input,textarea{font:inherit}
 .btn{border:1px solid var(--cy);border-radius:10px;padding:.7em 1.15em;font-weight:700;background:linear-gradient(180deg,#123a63,#0c2a4a);color:var(--tx);cursor:pointer;transition:.15s}
 .btn:hover{box-shadow:0 0 0 3px #29d3ff33}.btn:disabled{opacity:.4;cursor:not-allowed;box-shadow:none}
-.btn.go{background:linear-gradient(180deg,#14c277,#0b8f56);border-color:var(--gr);color:#031a0e}
-.btn.alt{background:var(--pn2);border-color:var(--ln);color:var(--tx)}.btn.red{background:linear-gradient(180deg,#b3263f,#85182c);border-color:var(--rd)}
+.btn.go{background:linear-gradient(180deg,#3FA2DB,#1F6EA6);border-color:var(--gr);color:#031422}
+.btn.alt{background:var(--pn2);border-color:var(--ln);color:var(--tx)}.btn.red{background:linear-gradient(180deg,#C45A00,#8F3F00);border-color:var(--rd)}
 .btn.sm{padding:.35em .75em;font-size:.85em;border-radius:8px}.btn.xl{font-size:1.25em;padding:.9em 1.4em;width:100%}
 .card{background:linear-gradient(180deg,var(--pn),var(--bg2));border:1px solid var(--ln);border-radius:14px;padding:14px 16px;margin-bottom:12px;box-shadow:0 8px 30px #0006}
 .card h2{color:var(--cy);font-size:1.05em;text-transform:uppercase}
 .muted{color:var(--mu);font-size:.9em}.ok{color:var(--gr);font-weight:700}.ko{color:var(--rd);font-weight:700}
 .tag{display:inline-block;border-radius:99px;padding:.1em .7em;font-size:.78em;font-weight:700;background:var(--pn2);border:1px solid var(--ln);color:var(--mu)}
 .pill{display:inline-block;border-radius:99px;padding:.15em .8em;font-weight:800;font-size:.8em}
-.pill.test{background:var(--am);color:#1b1100}.pill.live{background:var(--rd);color:#fff}
+.pill.test{background:var(--am);color:#1b1100}.pill.live{background:var(--rd);color:#1b0a00}
 table{border-collapse:collapse;width:100%}th,td{padding:6px 8px;border-bottom:1px solid var(--ln);text-align:left;vertical-align:top}th{font-size:.75em;color:var(--mu);text-transform:uppercase;letter-spacing:.06em}
 pre.ctx{margin:.5em 0;padding:10px 12px;background:#050A14;border:1px solid var(--ln);border-left:3px solid var(--cy);border-radius:8px;color:#BDEBFF;font:13px/1.5 ui-monospace,"Cascadia Code",Consolas,Menlo,monospace;white-space:pre-wrap;overflow-x:auto}
 .ports{display:inline-flex;gap:3px;vertical-align:middle}.ports i{width:9px;height:9px;border-radius:2px;background:var(--gr);box-shadow:0 0 6px var(--gr);animation:blink 1.6s var(--d) infinite}
@@ -236,7 +236,7 @@ pre.ctx{margin:.5em 0;padding:10px 12px;background:#050A14;border:1px solid var(
 .opt:hover{border-color:var(--oc)}
 .opt .lt{flex:0 0 auto;display:flex;align-items:center;justify-content:center;width:2.4em;height:2.4em;border-radius:7px;background:var(--oc);color:#04101f;font:800 1.1em ui-monospace,Consolas,monospace;box-shadow:inset 0 -3px 0 #0003,0 0 0 3px #0000}
 .opt.sel{border-color:var(--oc);box-shadow:0 0 0 3px color-mix(in srgb,var(--oc) 35%,transparent);background:linear-gradient(180deg,#183052,#10223d)}
-.opt.good{border-color:var(--gr);background:linear-gradient(180deg,#0f3b2a,#0a2a1e)}.opt.bad{border-color:var(--rd);background:linear-gradient(180deg,#43151f,#2b0e15)}
+.opt.good{border-color:var(--gr);background:linear-gradient(180deg,#0f2f45,#0a2133)}.opt.bad{border-color:var(--rd);background:linear-gradient(180deg,#45280a,#2b1806)}
 .opt.dim{opacity:.55}.opt:disabled{cursor:default}
 .cable{height:8px;border-radius:99px;background:#0b1730;border:1px solid var(--ln);overflow:hidden}.cable>div{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--gr),var(--cy));transition:width .4s linear}
 .cable.low>div{background:linear-gradient(90deg,var(--am),var(--rd))}
@@ -247,7 +247,7 @@ pre.ctx{margin:.5em 0;padding:10px 12px;background:#050A14;border:1px solid var(
 .bar{display:inline-block;height:14px;border-radius:3px;vertical-align:middle}
 .fxbar{position:fixed;left:0;right:0;bottom:0;z-index:60;display:flex;gap:8px;justify-content:center;padding:8px 10px;background:#060B16f2;border-top:1px solid var(--ln)}
 .fxbar .btn{flex:1;max-width:260px;padding:.55em .8em;font-size:.95em}
-.fxbar .btn.on{background:linear-gradient(180deg,#14c277,#0b8f56);color:#031a0e;border-color:var(--gr)}
+.fxbar .btn.on{background:linear-gradient(180deg,#3FA2DB,#1F6EA6);color:#031422;border-color:var(--gr)}
 .sheet{position:fixed;inset:0 0 54px 0;z-index:50;overflow:auto;background:#060B16;padding:14px 16px}
 .sheet h3{color:var(--cy);margin:1em 0 .3em;font-size:1em}.sheet ul{padding-left:1.2em;margin:.3em 0}.sheet li{margin:.25em 0}
 `;
@@ -2661,9 +2661,40 @@ function onMsg(o) {
   }
   if (ch) commit(imm);
 }
+/* ---------- voyant de synchro PowerPoint (texte + symbole + forme : lisible sans la couleur) ---------- */
+let forceUntil = 0, beepOn = false, lastSync = '';
+try { beepOn = localStorage.getItem('jl_beep') === '1'; } catch (e) {}
+function syncState() { return slideLink === 'WebSocket' ? 'ok' : slideLink === 'reconnexion' ? 'off' : 'warn'; }
+function syncBadge(small) {
+  const s = syncState();
+  const st = s === 'ok' ? ['●', 'OK', 'color:#56B4E9;border:2px solid #56B4E9']
+    : s === 'warn' ? ['▲', slideLink === 'ntfy' ? 'SECOURS (ntfy)' : 'CONNEXION…', 'color:#F0E442;border:2px dashed #F0E442']
+    : ['■', 'COUPÉE', 'background:#FF8A3D;color:#1b0a00;border:3px solid #fff'];
+  return `<b style="display:inline-block;padding:2px 8px;border-radius:6px;font-size:${small ? '1em' : '1.1em'};${st[2]}">${st[0]} ${st[1]}</b>`;
+}
+function syncAge() {
+  if (!G.slideSeen) return 'aucun signal PowerPoint reçu';
+  const sec = Math.max(0, Math.round((now() - G.slideSeen) / 1000));
+  return (G.lastSlide && G.lastSlide.n ? 'diapo ' + G.lastSlide.n + ' / ' + AC.PUB.total : 'aucune diapo reçue') + ' · dernier signal il y a ' + (sec < 90 ? sec + ' s' : Math.round(sec / 60) + ' min');
+}
+function beep() { try { const c = new (window.AudioContext || window.webkitAudioContext)(), o = c.createOscillator(), g = c.createGain(); o.connect(g); g.connect(c.destination); o.frequency.value = 880; g.gain.value = .15; o.start(); setTimeout(() => { o.stop(); c.close(); }, 700); } catch (e) {} }
+setInterval(() => {
+  try { document.querySelectorAll('.syncAge').forEach(e => { e.textContent = syncAge(); }); } catch (e) {}
+  const st = syncState(); if (st === 'off' && lastSync !== 'off' && beepOn) beep(); lastSync = st;
+}, 1000);
+function resync() {                 // relit la dernière diapo gardée par le relais et reconnecte l'écoute si besoin
+  forceUntil = now() + 8000;
+  if (relayS) {
+    relayS._seen.clear();
+    const sub = relayS._subs[relayS.tS]; if (sub) sub.last = 0;
+    if (relayS._wsUp && relayS._ws) relayS._wsSend({a: 'sub', t: relayS.tS, since: 0});
+    else { try { relayS._ws && relayS._ws.close(); } catch (e) {} relayS._fails = 0; relayS._wsOpen(); }
+  }
+  ui.note = 'Resynchronisation demandée : relecture de la dernière diapo reçue par le relais…'; commit(false);
+}
 function onSlide(o, m) {
   if (!o || (o.k !== 'S' && o.k !== 'T')) return;
-  if (m && m.time && m.time * 1000 < LOADED - 1500) return;   // ignore les messages d'avant l'ouverture de cette page
+  if (m && m.time && !(m.ws && now() < forceUntil) && m.time * 1000 < LOADED - 1500) return;   // ignore les messages d'avant l'ouverture de cette page (sauf relecture demandée par « Resynchroniser »)
   if (o.k === 'T') { G.slideSeen = now(); ui.note = 'Test du complément PowerPoint reçu : la liaison fonctionne.'; commit(false); return; }   // TesterLANLive
   G.slideSeen = now(); G.lastSlide = {n:o.n || null, gid:null, qid:null, ts:now()};
   if (o.g && AC.PUB.qs[o.g]) { arrive(o.g, o.n); return; }                 // diapo « Question » : étiquette = identifiant de question
@@ -2737,7 +2768,7 @@ function doPrimary() {
 function tick() {
   if (!G || !G.cur) return;
   const c = G.cur;
-  const el = $('tm'); if (el && c.st === 'open') { const rem = c.dur - (now() - c.t0) / 1000; el.textContent = rem >= 0 ? AC.fmtT(rem) : '+' + AC.fmtT(-rem) + ' · ½ pts'; el.style.color = rem < 0 ? '#FF4D6A' : ''; const cb = $('cb'); if (cb) { cb.style.width = Math.max(0, 100 * rem / c.dur) + '%'; cb.parentNode.className = 'cable' + (rem < 8 ? ' low' : ''); } }
+  const el = $('tm'); if (el && c.st === 'open') { const rem = c.dur - (now() - c.t0) / 1000; el.textContent = rem >= 0 ? AC.fmtT(rem) : '+' + AC.fmtT(-rem) + ' · ½ pts'; el.style.color = rem < 0 ? '#FF8A3D' : ''; const cb = $('cb'); if (cb) { cb.style.width = Math.max(0, 100 * rem / c.dur) + '%'; cb.parentNode.className = 'cable' + (rem < 8 ? ' low' : ''); } }
 }
 setInterval(tick, 500);
 document.addEventListener('keydown', e => {
@@ -2808,7 +2839,7 @@ function header() {
   const n = nPl(), tabs = [['pilot', 'Pilotage'], ['quest', 'Questions'], ['rank', 'Classement'], ['corr', 'Corrigés'], ['guide', 'Guide']];
   return `<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:8px">
    <div><h1 style="margin:0">LAN Live ${G.test ? '<span class="pill test">MODE TEST</span>' : '<span class="pill live">SÉANCE RÉELLE</span>'}</h1><span class="muted">${AC.PORTS(12)} ${AC.esc(relayStatus)}</span></div>
-   <div style="text-align:right"><div class="muted">Complément PowerPoint</div><b style="font-size:1.1em;color:${G.slideSeen ? '#3DFF9A' : '#9DB2D3'}">${G.slideSeen ? '🟢 détecté' : '⚪ non détecté (normal sur Mac)'}</b><div><b>${n}</b> joueur${n > 1 ? 's' : ''} connecté${n > 1 ? 's' : ''}</div></div></div>
+   <div style="text-align:right"><div class="muted">Synchro PowerPoint</div>${syncBadge()}<div class="muted syncAge">${syncAge()}</div><div><b>${n}</b> joueur${n > 1 ? 's' : ''} connecté${n > 1 ? 's' : ''}</div></div></div>
    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">${tabs.map(t => `<button class="btn ${tab === t[0] ? '' : 'alt'} sm" onclick="window.setTab('${t[0]}')">${t[1]}</button>`).join('')}
    <span style="flex:1"></span><button class="btn alt sm" onclick="window.open(projUrl(),'_blank')">Ouvrir le classement projeté ↗</button><button class="btn alt sm" onclick="window.exportCSV()">Exporter CSV</button></div>`;
 }
@@ -2828,7 +2859,7 @@ function testBar() {
    <button class="btn alt sm" onclick="window.resetPoints()">Remettre à zéro</button>
    <select id="gsel" style="background:#050A14;color:#E8F1FF;border:1px solid #1F3556;border-radius:8px;padding:5px">${AC.PUB.groups.map(g => `<option value="${g.id}">Diapo ${g.slide} · ${AC.esc(g.titre)}</option>`).join('')}</select>
    <button class="btn alt sm" onclick="window.goto($('gsel').value)">Aller à ce groupe</button>
-   <button class="btn red sm" onclick="window.goReal()">Quitter le mode test → séance réelle</button></div></div>`;
+   <button class="btn red sm" onclick="window.goReal()">⚠ Quitter le mode test → séance réelle</button></div></div>`;
 }
 window.addBots = addBots; window.botAnswers = botAnswers; window.resetPoints = resetPoints; window.goReal = goReal;
 window.goto = gid => launch(gid, 0);
@@ -2846,27 +2877,31 @@ function pilotTab() {
     const na = Object.keys(c.ans).length, waiting = Object.keys(G.pl).filter(p => !c.ans[p]).map(p => G.pl[p].n);
     const rem = c.st === 'open' ? c.dur - (now() - c.t0) / 1000 : 0, remTxt = rem >= 0 ? AC.fmtT(rem) : '+' + AC.fmtT(-rem) + ' · ½ pts';
     h += `<div class="card"><div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><h2>Diapo ${q.sl} / ${AC.PUB.total} · ${AC.esc(g.titre)} · question ${c.i + 1}/${g.qs.length} ${q.final ? '<span class="pill test">POINTS ×2</span>' : ''}</h2>
-     <div><span class="tag">${c.st === 'open' ? 'EN COURS' : c.st === 'closed' ? 'CLOSE' : 'CORRIGÉE'}</span> <b class="mono" style="font-size:1.4em" id="tm" style="${rem < 0 ? 'color:#FF4D6A' : ''}">${c.st === 'open' ? remTxt : ''}</b></div></div>
+     <div><span class="tag">${c.st === 'open' ? 'EN COURS' : c.st === 'closed' ? 'CLOSE' : 'CORRIGÉE'}</span> <b class="mono" style="font-size:1.4em" id="tm" style="${rem < 0 ? 'color:#FF8A3D' : ''}">${c.st === 'open' ? remTxt : ''}</b></div></div>
      ${c.st === 'open' ? `<div class="cable"><div id="cb" style="width:${Math.max(0, 100 * rem / c.dur)}%"></div></div>` : ''}
      <p style="font-size:1.1em;margin:.6em 0"><b>${AC.esc(q.txt)}</b></p>${q.ctx ? `<pre class="ctx">${AC.esc(q.ctx)}</pre>` : ''}
-     ${q.opts.map((o, i) => `<div class="opt" style="--oc:${AC.LCOL[i]};cursor:default;${i === rep ? 'border-color:#3DFF9A' : ''}"><span class="lt">${AC.LET[i]}</span><span style="flex:1">${AC.esc(o)} ${i === rep ? '<b class="ok">✔ bonne réponse</b>' : ''}</span><b class="mono">${cnt[i]}</b></div>`).join('')}
+     ${q.opts.map((o, i) => `<div class="opt" style="--oc:${AC.LCOL[i]};cursor:default;${i === rep ? 'border-color:#56B4E9' : ''}"><span class="lt">${AC.LET[i]}</span><span style="flex:1">${AC.esc(o)} ${i === rep ? '<b class="ok">✔ bonne réponse</b>' : ''}</span><b class="mono">${cnt[i]}</b></div>`).join('')}
      <p class="muted"><b>${na} / ${nPl()}</b> réponses reçues${waiting.length && waiting.length <= 12 && c.st !== 'rev' ? ' · en attente : ' + waiting.map(AC.esc).join(', ') : ''}
      ${c.st === 'open' ? ` · <button class="btn alt sm" onclick="window.plus()">+15 s</button>` : ''}</p>
-     <div class="card" style="background:${c.st === 'rev' ? '#0a2a1e;border-color:#3DFF9A' : '#0d2238;border-color:#29D3FF'}"><b>${c.st === 'rev' ? 'Explication envoyée aux joueurs' : 'Pour vous seul : réponse et explication (les joueurs ne les voient qu’à la correction)'}</b><br><span class="ok">Bonne réponse : ${AC.LET[rep]}. ${AC.esc(q.opts[rep])}</span><br>${AC.esc(SEC.q[c.qid][1])}</div></div>`;
+     <div class="card" style="background:${c.st === 'rev' ? '#0a2133;border-color:#56B4E9' : '#0d2238;border-color:#29D3FF'}"><b>${c.st === 'rev' ? 'Explication envoyée aux joueurs' : 'Pour vous seul : réponse et explication (les joueurs ne les voient qu’à la correction)'}</b><br><span class="ok">Bonne réponse : ${AC.LET[rep]}. ${AC.esc(q.opts[rep])}</span><br>${AC.esc(SEC.q[c.qid][1])}</div></div>`;
   }
   h += `<div class="card"><h2>Liaison avec le PowerPoint</h2><div style="display:flex;gap:14px;flex-wrap:wrap;align-items:center">
    <label>Mode : <select onchange="window.setAuto(this.value)" style="background:#050A14;color:#E8F1FF;border:1px solid #1F3556;border-radius:8px;padding:5px"><option value="direct" ${G.auto === 'direct' ? 'selected' : ''}>Automatique (lance dès que la diapo apparaît)</option><option value="confirm" ${G.auto === 'confirm' ? 'selected' : ''}>Avec confirmation</option><option value="manual" ${G.auto === 'manual' ? 'selected' : ''}>Manuel</option></select></label>
    <label>Je suis à la diapo n° <input id="sln" type="number" min="1" max="${AC.PUB.total}" style="width:5em;background:#050A14;color:#E8F1FF;border:1px solid #1F3556;border-radius:8px;padding:5px" value="${AC.esc(ui.sl)}" onkeydown="if(event.key==='Enter')window.goSlide()"></label> <button class="btn alt sm" onclick="window.goSlide()">Aller</button>
-   <span class="muted">${G.slideSeen ? '🟢 macro PowerPoint détectée' : '⚪ macro non détectée (normal sur Mac)'}${slideLink ? ' · liaison diapos : ' + slideLink : ''}${G.lastSlide && G.lastSlide.n ? ' · diapo actuelle : ' + G.lastSlide.n + ' / ' + AC.PUB.total : ' · diapo actuelle : inconnue'}</span></div></div>`;
+   <span class="muted">${syncBadge(true)} liaison diapos : ${AC.esc(slideLink || 'connexion…')} · macro PowerPoint ${G.slideSeen ? 'détectée' : 'non détectée (normal sur Mac)'} · <span class="syncAge">${syncAge()}</span></span>
+   <button class="btn alt sm" onclick="window.resync()">↻ Resynchroniser</button>
+   <label class="muted"><input type="checkbox" ${beepOn ? 'checked' : ''} onchange="window.setBeep(this.checked)"> 🔔 son si la synchro est coupée</label></div></div>`;
   const R = AC.rankList(G.pl).slice(0, 8);
   h += `<div class="card"><h2>Classement (top 8)</h2>${lbTable(R, '')}</div>`;
-  h += `<div class="card"><button class="btn red sm" onclick="window.endSession()">Terminer la séance</button> <span class="muted">Affiche le podium final aux joueurs.</span></div>`;
+  h += `<div class="card"><button class="btn red sm" onclick="window.endSession()">⚠ Terminer la séance</button> <span class="muted">Affiche le podium final aux joueurs.</span></div>`;
   return h;
 }
 window.primary = doPrimary;
 window.launchG = (gid, qi) => launch(gid, qi || 0);
 window.dismiss = () => { G.pend = null; commit(false); };
 window.setAuto = v => { G.auto = v; commit(false); };
+window.resync = resync;
+window.setBeep = v => { beepOn = !!v; try { localStorage.setItem('jl_beep', v ? '1' : '0'); } catch (e) {} if (v) beep(); };
 window.setAutoRev = v => { G.autoRev = !!v; commit(false); };
 window.plus = () => { if (G.cur && G.cur.st === 'open') { G.cur.dur += 15; commit(true); } };
 window.goSlide = () => {
@@ -2885,12 +2920,12 @@ function lbTable(R, meid) {
 }
 function startGuide() {
   const u = joinUrl();
-  return `<div class="card" style="border-color:#3DFF9A"><h2>Mise en route : 4 étapes</h2>
+  return `<div class="card" style="border-color:#56B4E9"><h2>Mise en route : 4 étapes</h2>
    <div style="display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start"><div style="width:190px;background:#fff;padding:8px;border-radius:10px">${qrSvg(u, 180)}</div>
    <ol style="flex:1;min-width:260px;margin:0;padding-left:1.2em">
     <li><b>Faites entrer les étudiants</b> : ils scannent ce QR code ou tapent l’adresse <span class="mono" style="color:#29D3FF;word-break:break-all">${AC.esc(u)}</span> <button class="btn alt sm" onclick="copyTxt('${AC.esc(u)}')">Copier</button>, puis saisissent un pseudo. <b>${nPl()}</b> connecté${nPl() > 1 ? 's' : ''} (30 maximum recommandé).</li>
     <li><b>Projetez votre PowerPoint</b> en diaporama sur le vidéoprojecteur ; gardez cette tour de contrôle sur l’écran de votre PC.</li>
-    <li><b>Liez les diapos aux questions</b> : sous Windows, le complément PowerPoint installé une fois suit vos diapos tout seul (rien à saisir) ; sinon tapez le numéro de diapo ci-dessous, ou utilisez le bouton vert. Détail dans l’onglet Guide.</li>
+    <li><b>Liez les diapos aux questions</b> : sous Windows, le complément PowerPoint installé une fois suit vos diapos tout seul (rien à saisir) ; sinon tapez le numéro de diapo ci-dessous, ou utilisez le grand bouton bleu. Détail dans l’onglet Guide.</li>
     <li><b>Optionnel</b> : ouvrez « le classement projeté » dans une seconde fenêtre pour l’afficher entre deux exercices.</li></ol></div></div>`;
 }
 function questTab() {
@@ -2919,7 +2954,7 @@ function corrTab() {
     if (g.chap !== chap) { chap = g.chap; h += `<h2 style="margin-top:14px;color:#29D3FF">${AC.esc(chap)}</h2>`; }
     h += `<div class="card"><b>${AC.esc(g.titre)}</b> <span class="muted">(diapos ${g.slide}–${g.slide + g.qs.length - 1})</span>` + g.qs.map(qid => { const q = AC.q(qid), s = SEC.q[qid];
       return `<div style="margin:10px 0;padding-top:8px;border-top:1px solid #1F3556"><b>${AC.esc(q.txt)}</b> <span class="tag">${qid} · diapo ${q.sl} / ${AC.PUB.total} · ${q.t} s${q.final ? ' · ×2' : ''}</span>${q.ctx ? `<pre class="ctx">${AC.esc(q.ctx)}</pre>` : ''}
-       ${q.opts.map((o, i) => `<div style="margin:2px 0;${i === s[0] ? 'color:#3DFF9A;font-weight:700' : 'color:#C9D8F2'}">${AC.LET[i]}. ${AC.esc(o)}${i === s[0] ? ' ✔' : ''}</div>`).join('')}<p class="muted">${AC.esc(s[1])}</p></div>`; }).join('') + '</div>';
+       ${q.opts.map((o, i) => `<div style="margin:2px 0;${i === s[0] ? 'color:#56B4E9;font-weight:700' : 'color:#C9D8F2'}">${AC.LET[i]}. ${AC.esc(o)}${i === s[0] ? ' ✔' : ''}</div>`).join('')}<p class="muted">${AC.esc(s[1])}</p></div>`; }).join('') + '</div>';
   });
   return h;
 }
@@ -2929,9 +2964,9 @@ function guideTab() {
    <div class="card"><h2>Lier le PowerPoint (Windows, une seule fois)</h2><ol>
    <li>Installez le <b>complément PowerPoint LAN Live</b> (procédure « Installation et test » fournie : une dizaine de clics, une seule fois pour ce PC).</li>
    <li>Ensuite, ouvrez simplement le PowerPoint fourni (un .pptx ordinaire) et lancez le diaporama : rien à saisir, rien à lancer.</li>
-   <li>Chaque fois que vous arrivez sur une diapo « Question », la tour de contrôle la reçoit et, en mode automatique, la lance. L’indicateur « Complément PowerPoint : détecté » passe au vert.</li></ol>
-   <p class="muted">Sous Mac, ou si les macros sont bloquées : tapez le numéro de diapo dans « Je suis à la diapo n° » puis Entrée, ou utilisez le grand bouton vert (touche Espace).</p></div>
-   <div class="card"><h2>Pendant la séance</h2><ul><li>Le grand bouton vert enchaîne : clore, corriger, question suivante.</li>
+   <li>Chaque fois que vous arrivez sur une diapo « Question », la tour de contrôle la reçoit et, en mode automatique, la lance. Le voyant « Synchro PowerPoint » affiche ● OK (liaison par le relais) ; ▲ SECOURS signifie que seul ntfy répond ; ■ COUPÉE signifie qu’aucune liaison n’est active : utilisez « Resynchroniser » ou tapez le numéro de diapo.</li></ol>
+   <p class="muted">Sous Mac, ou si les macros sont bloquées : tapez le numéro de diapo dans « Je suis à la diapo n° » puis Entrée, ou utilisez le grand bouton bleu (touche Espace).</p></div>
+   <div class="card"><h2>Pendant la séance</h2><ul><li>Le grand bouton « Lancer / Clore / Corriger » (en bleu) enchaîne : clore, corriger, question suivante.</li>
    <li>Points : ${AC.BASE} par bonne réponse + jusqu’à ${AC.SPEED} de bonus de rapidité + ${AC.STREAK} par bonne réponse consécutive (jusqu’à ${AC.STREAKMAX}) ; la question finale vaut le double. À égalité : le temps cumulé le plus court départage.</li>
    <li>Réponse tardive : après la fin du chrono, les joueurs peuvent encore répondre tant que vous n’avez pas clos la question ; une bonne réponse tardive vaut ${Math.round(AC.BASE * AC.LATE)} points (pas de bonus de rapidité ni de série, la série continue). Vous voyez la bonne réponse et son explication dès l’ouverture de la question.</li>
    <li>Le chrono est propre à chaque question ; « +15 s » le prolonge ; la question se clôt quand tous ont répondu, quand vous la closez, ou quand vous passez à la diapo suivante (mode automatique).</li>
