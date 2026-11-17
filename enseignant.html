@@ -2612,7 +2612,7 @@ function connect() {
   unsubP = relay.sub(relay.tP, 'all', onMsg, st => { relayStatus = st === 'ok' ? 'relais connecté' + (relay && relay.wsUp() ? ' (WebSocket)' : ' (ntfy)') : 'relais : reconnexion…'; scheduleRender(); });
   // sujet « diapos » : fixe (salle = code de la présentation), c'est celui que le complément PowerPoint connaît ; relais Cloudflare en priorité, ntfy en secours
   relayS = new AC.Relay(G.relay, AC.PUB.sid || G.sid);
-  unsubS = relayS.sub(relayS.tS, 'all', onSlide, st => { slideLink = st === 'ok' ? (relayS && relayS.wsUp() ? 'WebSocket' : 'ntfy') : 'reconnexion'; });
+  unsubS = relayS.sub(relayS.tS, 'all', onSlide, st => { slideLink = st === 'ok' ? (relayS && relayS.wsUp() ? 'WebSocket' : 'ntfy') : 'reconnexion'; scheduleRender(); });
   scheduleRender();
 }
 function publish() { G.v++; save(); if (relay) relay.pubState(buildPub()); }
