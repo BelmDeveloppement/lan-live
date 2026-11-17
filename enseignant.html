@@ -74,7 +74,7 @@ AC.Relay = function (base, sid, ws) {
   const h = AC.hash(); this.wsBase = h.ws === '0' ? '' : (h.ws || (ws === undefined ? AC.DEFAULT_WS : ws));
   this._subs = {}; this._acks = {}; this._seen = new Set(); this._ws = null; this._wsUp = false; this._fails = 0; this._dead = false;
 };
-AC.Relay.prototype.useWs = function (topic) { return !!this.wsBase && (topic === this.tH || topic === this.tP); };
+AC.Relay.prototype.useWs = function (topic) { return !!this.wsBase && (topic === this.tH || topic === this.tP || topic === this.tS); };
 AC.Relay.prototype.wsUp = function () { return this._wsUp; };
 AC.Relay.prototype._statusAll = function () { Object.keys(this._subs).forEach(t => this._subs[t].upd && this._subs[t].upd()); };
 AC.Relay.prototype._wsOpen = function () {
@@ -96,7 +96,7 @@ AC.Relay.prototype._wsOpen = function () {
     const s = this._subs[m.t]; if (!s) return;
     s.last = m.id;
     let o; try { o = JSON.parse(m.m); } catch (x) { return; }
-    s.cb(o);
+    s.cb(o, m.t === this.tS && m.ts ? {time: m.ts / 1000} : undefined);   // sujet diapos : horodatage serveur (pour ignorer les diapos d'avant l'ouverture)
   };
   const end = () => {
     if (closed) return; closed = true; clearInterval(ping);
@@ -150,29 +150,41 @@ AC.Relay.prototype.sub = function (topic, since, onmsg, onstatus) {
   };
   open();
   if (this.useWs(topic)) {
-    this._subs[topic] = {last: 0, cb: o => deliver(o), ws: true, upd};
+    this._subs[topic] = {last: 0, cb: (o, mm) => deliver(o, mm), ws: true, upd};
     if (this._wsUp) this._wsSend({a: 'sub', t: topic, since: 0}); else this._wsOpen();
   }
   return () => { dead = true; try { es.close(); } catch (e) {} delete this._subs[topic]; };
 };
 AC.Relay.prototype.pubState = function (st) {
   const s = JSON.stringify(st), n = Math.ceil(s.length / AC.CH);
+  const ntfyGo = () => {               // copie sur ntfy (repli) : seulement si le relais ne suffit pas, pour ménager le quota de ntfy.sh
+    this._pending = {v: st.v, s, n};
+    if (this._busy) return;
+    this._busy = true;
+    (async () => {
+      while (this._pending) {
+        const p = this._pending; this._pending = null;
+        let ok = true;
+        for (let i = 0; i < p.n && ok; i++) ok = await this._ntfy(this.tH, JSON.stringify({_u: AC.rid(10), v: p.v, i, n: p.n, d: p.s.slice(i * AC.CH, (i + 1) * AC.CH)}));
+        this.lastOk = ok;
+      }
+      this._busy = false;
+    })();
+  };
   if (this.wsBase && this._wsUp) {     // WebSocket : état complet en un ou quelques gros messages, immédiat
     const k = Math.ceil(s.length / AC.CHW);
-    for (let i = 0; i < k; i++) this._wsSend({a: 'pub', t: this.tH, m: JSON.stringify({_u: AC.rid(10), v: st.v, i, n: k, d: s.slice(i * AC.CHW, (i + 1) * AC.CHW)})});
-  }
-  this._pending = {v: st.v, s, n};
-  if (this._busy) return;
-  this._busy = true;
-  (async () => {
-    while (this._pending) {
-      const p = this._pending; this._pending = null;
-      let ok = true;
-      for (let i = 0; i < p.n && ok; i++) ok = await this._ntfy(this.tH, JSON.stringify({_u: AC.rid(10), v: p.v, i, n: p.n, d: p.s.slice(i * AC.CH, (i + 1) * AC.CH)}));
-      this.lastOk = ok;
+    let sent = true;
+    for (let i = 0; i < k; i++) {
+      const u = AC.rid(10);
+      if (i === 0) {                   // accusé du relais : si aucun abonné (n=0) ou pas de réponse en 2,5 s, on recopie sur ntfy
+        const t = setTimeout(() => { delete this._acks[u]; ntfyGo(); }, 2500);
+        this._acks[u] = {t, fb: ntfyGo};
+      }
+      if (!this._wsSend({a: 'pub', t: this.tH, m: JSON.stringify({_u: AC.rid(10), v: st.v, i, n: k, d: s.slice(i * AC.CHW, (i + 1) * AC.CHW)}), u: i === 0 ? u : undefined})) sent = false;
     }
-    this._busy = false;
-  })();
+    if (sent && AC.hash().ntfy !== '1') return;     // ajouter « &ntfy=1 » au lien de la tour pour toujours doubler sur ntfy
+  }
+  ntfyGo();
 };
 AC.Assembler = function (cb) {
   const parts = {}; let cur = -1;
@@ -2567,7 +2579,7 @@ let SEC = null, G = null, relay = null, tab = 'pilot', relayStatus = '…', ui =
 const LSK = 'ac_host_v1', LSKT = 'ac_host_test_v1';
 const now = () => Date.now();
 const LOADED = now();
-let autoT = null, pubTimer = null, rendering = false, lastPrimary = 0, unsubS = null, unsubP = null;
+let autoT = null, pubTimer = null, rendering = false, lastPrimary = 0, unsubS = null, unsubP = null; let relayS = null, slideLink = '';
 
 /* ---------- déchiffrement des corrigés ---------- */
 async function unlock(code) {
@@ -2595,10 +2607,12 @@ function resumeGame(s) { G = s; G.pend = null; connect(); commit(true); }
 function save() { try { localStorage.setItem(G.test ? LSKT : LSK, JSON.stringify(G)); } catch (e) {} }
 function connect() {
   if (unsubP) unsubP(); if (unsubS) unsubS();
+  if (relayS) { relayS._dead = true; try { relayS._ws && relayS._ws.close(); } catch (e) {} }
   relay = new AC.Relay(G.relay, G.sid);
   unsubP = relay.sub(relay.tP, 'all', onMsg, st => { relayStatus = st === 'ok' ? 'relais connecté' + (relay && relay.wsUp() ? ' (WebSocket)' : ' (ntfy)') : 'relais : reconnexion…'; scheduleRender(); });
-  relay.tS = 'ac' + (AC.PUB.sid || G.sid) + 's';        // sujet « diapos » fixe : c'est celui que le complément PowerPoint connaît
-  unsubS = relay.sub(relay.tS, 'all', onSlide, () => {});
+  // sujet « diapos » : fixe (salle = code de la présentation), c'est celui que le complément PowerPoint connaît ; relais Cloudflare en priorité, ntfy en secours
+  relayS = new AC.Relay(G.relay, AC.PUB.sid || G.sid);
+  unsubS = relayS.sub(relayS.tS, 'all', onSlide, st => { slideLink = st === 'ok' ? (relayS && relayS.wsUp() ? 'WebSocket' : 'ntfy') : 'reconnexion'; });
   scheduleRender();
 }
 function publish() { G.v++; save(); if (relay) relay.pubState(buildPub()); }
@@ -2843,7 +2857,7 @@ function pilotTab() {
   h += `<div class="card"><h2>Liaison avec le PowerPoint</h2><div style="display:flex;gap:14px;flex-wrap:wrap;align-items:center">
    <label>Mode : <select onchange="window.setAuto(this.value)" style="background:#050A14;color:#E8F1FF;border:1px solid #1F3556;border-radius:8px;padding:5px"><option value="direct" ${G.auto === 'direct' ? 'selected' : ''}>Automatique (lance dès que la diapo apparaît)</option><option value="confirm" ${G.auto === 'confirm' ? 'selected' : ''}>Avec confirmation</option><option value="manual" ${G.auto === 'manual' ? 'selected' : ''}>Manuel</option></select></label>
    <label>Je suis à la diapo n° <input id="sln" type="number" min="1" max="${AC.PUB.total}" style="width:5em;background:#050A14;color:#E8F1FF;border:1px solid #1F3556;border-radius:8px;padding:5px" value="${AC.esc(ui.sl)}" onkeydown="if(event.key==='Enter')window.goSlide()"></label> <button class="btn alt sm" onclick="window.goSlide()">Aller</button>
-   <span class="muted">${G.slideSeen ? '🟢 macro PowerPoint détectée' : '⚪ macro non détectée (normal sur Mac)'}${G.lastSlide && G.lastSlide.n ? ' · diapo actuelle : ' + G.lastSlide.n + ' / ' + AC.PUB.total : ' · diapo actuelle : inconnue'}</span></div></div>`;
+   <span class="muted">${G.slideSeen ? '🟢 macro PowerPoint détectée' : '⚪ macro non détectée (normal sur Mac)'}${slideLink ? ' · liaison diapos : ' + slideLink : ''}${G.lastSlide && G.lastSlide.n ? ' · diapo actuelle : ' + G.lastSlide.n + ' / ' + AC.PUB.total : ' · diapo actuelle : inconnue'}</span></div></div>`;
   const R = AC.rankList(G.pl).slice(0, 8);
   h += `<div class="card"><h2>Classement (top 8)</h2>${lbTable(R, '')}</div>`;
   h += `<div class="card"><button class="btn red sm" onclick="window.endSession()">Terminer la séance</button> <span class="muted">Affiche le podium final aux joueurs.</span></div>`;
