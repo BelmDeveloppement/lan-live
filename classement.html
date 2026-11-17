@@ -74,7 +74,7 @@ AC.Relay = function (base, sid, ws) {
   const h = AC.hash(); this.wsBase = h.ws === '0' ? '' : (h.ws || (ws === undefined ? AC.DEFAULT_WS : ws));
   this._subs = {}; this._acks = {}; this._seen = new Set(); this._ws = null; this._wsUp = false; this._fails = 0; this._dead = false;
 };
-AC.Relay.prototype.useWs = function (topic) { return !!this.wsBase && (topic === this.tH || topic === this.tP); };
+AC.Relay.prototype.useWs = function (topic) { return !!this.wsBase && (topic === this.tH || topic === this.tP || topic === this.tS); };
 AC.Relay.prototype.wsUp = function () { return this._wsUp; };
 AC.Relay.prototype._statusAll = function () { Object.keys(this._subs).forEach(t => this._subs[t].upd && this._subs[t].upd()); };
 AC.Relay.prototype._wsOpen = function () {
@@ -96,7 +96,7 @@ AC.Relay.prototype._wsOpen = function () {
     const s = this._subs[m.t]; if (!s) return;
     s.last = m.id;
     let o; try { o = JSON.parse(m.m); } catch (x) { return; }
-    s.cb(o);
+    s.cb(o, m.t === this.tS && m.ts ? {time: m.ts / 1000} : undefined);   // sujet diapos : horodatage serveur (pour ignorer les diapos d'avant l'ouverture)
   };
   const end = () => {
     if (closed) return; closed = true; clearInterval(ping);
@@ -150,29 +150,41 @@ AC.Relay.prototype.sub = function (topic, since, onmsg, onstatus) {
   };
   open();
   if (this.useWs(topic)) {
-    this._subs[topic] = {last: 0, cb: o => deliver(o), ws: true, upd};
+    this._subs[topic] = {last: 0, cb: (o, mm) => deliver(o, mm), ws: true, upd};
     if (this._wsUp) this._wsSend({a: 'sub', t: topic, since: 0}); else this._wsOpen();
   }
   return () => { dead = true; try { es.close(); } catch (e) {} delete this._subs[topic]; };
 };
 AC.Relay.prototype.pubState = function (st) {
   const s = JSON.stringify(st), n = Math.ceil(s.length / AC.CH);
+  const ntfyGo = () => {               // copie sur ntfy (repli) : seulement si le relais ne suffit pas, pour ménager le quota de ntfy.sh
+    this._pending = {v: st.v, s, n};
+    if (this._busy) return;
+    this._busy = true;
+    (async () => {
+      while (this._pending) {
+        const p = this._pending; this._pending = null;
+        let ok = true;
+        for (let i = 0; i < p.n && ok; i++) ok = await this._ntfy(this.tH, JSON.stringify({_u: AC.rid(10), v: p.v, i, n: p.n, d: p.s.slice(i * AC.CH, (i + 1) * AC.CH)}));
+        this.lastOk = ok;
+      }
+      this._busy = false;
+    })();
+  };
   if (this.wsBase && this._wsUp) {     // WebSocket : état complet en un ou quelques gros messages, immédiat
     const k = Math.ceil(s.length / AC.CHW);
-    for (let i = 0; i < k; i++) this._wsSend({a: 'pub', t: this.tH, m: JSON.stringify({_u: AC.rid(10), v: st.v, i, n: k, d: s.slice(i * AC.CHW, (i + 1) * AC.CHW)})});
-  }
-  this._pending = {v: st.v, s, n};
-  if (this._busy) return;
-  this._busy = true;
-  (async () => {
-    while (this._pending) {
-      const p = this._pending; this._pending = null;
-      let ok = true;
-      for (let i = 0; i < p.n && ok; i++) ok = await this._ntfy(this.tH, JSON.stringify({_u: AC.rid(10), v: p.v, i, n: p.n, d: p.s.slice(i * AC.CH, (i + 1) * AC.CH)}));
-      this.lastOk = ok;
+    let sent = true;
+    for (let i = 0; i < k; i++) {
+      const u = AC.rid(10);
+      if (i === 0) {                   // accusé du relais : si aucun abonné (n=0) ou pas de réponse en 2,5 s, on recopie sur ntfy
+        const t = setTimeout(() => { delete this._acks[u]; ntfyGo(); }, 2500);
+        this._acks[u] = {t, fb: ntfyGo};
+      }
+      if (!this._wsSend({a: 'pub', t: this.tH, m: JSON.stringify({_u: AC.rid(10), v: st.v, i, n: k, d: s.slice(i * AC.CHW, (i + 1) * AC.CHW)}), u: i === 0 ? u : undefined})) sent = false;
     }
-    this._busy = false;
-  })();
+    if (sent && AC.hash().ntfy !== '1') return;     // ajouter « &ntfy=1 » au lien de la tour pour toujours doubler sur ntfy
+  }
+  ntfyGo();
 };
 AC.Assembler = function (cb) {
   const parts = {}; let cur = -1;
