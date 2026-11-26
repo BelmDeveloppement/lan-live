@@ -12,6 +12,9 @@ Publier avec GitHub Pages (branche main, racine).
 - Diapo de réponse associée à chaque question : arriver dessus corrige automatiquement la question en cours (mode automatique).
 - Lien depuis le PowerPoint vers `classement.html` sans paramètre : rouvre la dernière séance lancée sur ce navigateur.
 
+## Version v17 (deck 471 diapos)
+- Pages de cours ajoutées avant les questions qui utilisaient des notions non enseignées (commandes Linux et Windows, RADIUS, EAP, hachage, cycle de vie des identités) ; quatre exercices « À vous » avec corrigé ; pages AGDLP et rôles 802.1X déplacées avant leurs questions. Aucune question ajoutée ni renumérotée : seuls les numéros de pages changent.
+
 ## Version v16 (deck 456 diapos)
 - Numéros de pages mis à jour (deux pages de cours LDAP ajoutées avant la question 65) ; aucune question ajoutée ni renumérotée.
 - Les « Séries » et exercices en groupe du cours deviennent des exercices individuels (sans numéro de série dans le deck).
