@@ -11,3 +11,10 @@ Publier avec GitHub Pages (branche main, racine).
 - Nouvelle question sur l'injection LDAP (remplace la question sur le RDN).
 - Diapo de réponse associée à chaque question : arriver dessus corrige automatiquement la question en cours (mode automatique).
 - Lien depuis le PowerPoint vers `classement.html` sans paramètre : rouvre la dernière séance lancée sur ce navigateur.
+
+## Version v15 (deck 454 diapos)
+
+- Le PowerPoint pilote les écrans : page de question = question ouverte ; page suivante (réponse) = clôture et correction envoyée aux joueurs. Commandes manuelles réservées au « Mode secours ».
+- Drapeau « ⚑ tous ont répondu » sur la tour de contrôle et sur l'écran projeté ; la fin du chrono ne ferme plus la question.
+- « Question N » (numéro du PowerPoint) affiché partout ; correction détaillée (démarche, pourquoi pas les autres, rôle, pilotage) sur la tour ; démarche et rôle sur l'écran joueur.
+- Adresse joueur fixe : `joueur.html` sans paramètre ouvre la séance du cours (séance « réelle » à adresse fixe) ; `classement.html` sans paramètre ouvre la dernière séance (ou celle du cours).
