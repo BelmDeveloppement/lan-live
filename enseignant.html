@@ -2763,7 +2763,7 @@ function onSlide(o, m) {
 function arrive(qid, n) {
   const q = AC.q(qid), g = grpOf(q.g), qi = g.qs.indexOf(qid);
   G.lastSlide = {n:n || q.sl, gid:g.id, qid, ts:now()};
-  const where = 'Diapo ' + q.sl + ' / ' + AC.PUB.total + ' · ' + g.titre + ' · question ' + (qi + 1) + '/' + g.qs.length;
+  const where = 'Question ' + AC.num(qid) + ' · diapo ' + q.sl + ' / ' + AC.PUB.total + ' · ' + g.titre;
   if (G.qdone[qid] || (G.cur && G.cur.qid === qid && G.cur.st !== 'rev')) { ui.note = where + ' : déjà jouée (bouton Relancer dans l’onglet Questions).'; commit(false); return; }
   const free = !G.cur || G.cur.st === 'rev';
   clearTimeout(autoT);
@@ -2828,14 +2828,14 @@ function stepInfo() {
   if (G.ended) return {label:'Séance terminée', act:null, ready:false, why:'La séance est terminée : exportez les résultats.'};
   if (!c) {
     const nx = nextSuggested();
-    return nx ? {label:'▶ Lancer : ' + nx.g.titre + ' · question ' + (nx.qi + 1) + '/' + nx.g.qs.length + ' (diapo ' + AC.q(nx.qid).sl + ' / ' + AC.PUB.total + ')', act:() => launch(nx.g.id, nx.qi), ready:true, why:'Aucune question en cours. Quand la diapo est à l’écran, lancez la suivante.'}
+    return nx ? {label:'▶ Lancer la question ' + AC.num(nx.qid) + ' · ' + nx.g.titre + ' (diapo ' + AC.q(nx.qid).sl + ' / ' + AC.PUB.total + ')', act:() => launch(nx.g.id, nx.qi), ready:true, why:'Aucune question en cours. Quand la diapo est à l’écran, lancez la suivante.'}
               : {label:'Toutes les questions ont été jouées', act:null, ready:false, why:'Vous pouvez terminer la séance.'};
   }
   const g = grpOf(c.gid), last = c.i + 1 >= g.qs.length, answered = Object.keys(c.ans).length;
   if (c.st === 'open') return {label:'■ Clore la question maintenant', act:() => { c.st = 'closed'; commit(true); }, ready:true, why:answered + ' / ' + nPl() + ' réponses reçues. Après la fin du chrono, les réponses restent possibles à demi-points : closez quand vous voulez (ou passez à la diapo suivante).'};
   if (c.st === 'closed') return {label:'✔ Corriger et attribuer les points', act:reveal, ready:true, why:'La question est close : les joueurs attendent la correction.'};
-  return last ? {label:'⏹ Terminer ce groupe', act:() => { G.cur = null; commit(true); }, ready:true, why:'Correction affichée. Le groupe est terminé.'}
-              : {label:'▶ Question suivante (' + (c.i + 2) + ' / ' + g.qs.length + ')', act:() => launch(c.gid, c.i + 1), ready:true, why:'Correction affichée : discutez, puis passez à la suite.'};
+  return last ? {label:'⏹ Terminer après la question ' + AC.num(c.qid), act:() => { G.cur = null; commit(true); }, ready:true, why:'Correction affichée. Cette série de questions est terminée.'}
+              : {label:'▶ Lancer la question ' + AC.num(g.qs[c.i + 1]), act:() => launch(c.gid, c.i + 1), ready:true, why:'Correction affichée : discutez, puis passez à la suite.'};
 }
 function nextSuggested() {
   const ok = qid => !G.qdone[qid] && !(G.cur && G.cur.qid === qid);
@@ -2948,8 +2948,8 @@ function testBar() {
    <button class="btn alt sm" onclick="window.addBots(6)">+ 6 joueurs fictifs</button>
    <button class="btn alt sm" onclick="window.botAnswers()" ${c && c.st === 'open' ? '' : 'disabled'}>Faire répondre les fictifs</button>
    <button class="btn alt sm" onclick="window.resetPoints()">Remettre à zéro</button>
-   <select id="gsel" style="background:#050A14;color:#E8F1FF;border:1px solid #1F3556;border-radius:8px;padding:5px">${AC.PUB.groups.map(g => `<option value="${g.id}">Diapo ${g.slide} · ${AC.esc(g.titre)}</option>`).join('')}</select>
-   <button class="btn alt sm" onclick="window.goto($('gsel').value)">Aller à ce groupe</button>
+   <select id="gsel" style="background:#050A14;color:#E8F1FF;border:1px solid #1F3556;border-radius:8px;padding:5px">${AC.PUB.groups.map(g => `<option value="${g.id}">Question ${AC.num(g.qs[0])}${g.qs.length > 1 ? '–' + AC.num(g.qs[g.qs.length - 1]) : ''} · diapo ${g.slide} · ${AC.esc(g.titre)}</option>`).join('')}</select>
+   <button class="btn alt sm" onclick="window.goto($('gsel').value)">Lancer cette série</button>
    <button class="btn red sm" onclick="window.goReal()">⚠ Quitter le mode test → séance réelle</button></div></div>`;
 }
 window.addBots = addBots; window.botAnswers = botAnswers; window.resetPoints = resetPoints; window.goReal = goReal;
@@ -2971,7 +2971,7 @@ function pilotTab() {
     const g = grpOf(c.gid), rep = SEC.q[c.qid][0], cnt = [0, 0, 0, 0]; Object.keys(c.ans).forEach(p => { if (c.ans[p].a !== undefined) cnt[c.ans[p].a]++; });
     const na = Object.keys(c.ans).length, waiting = Object.keys(G.pl).filter(p => !c.ans[p]).map(p => G.pl[p].n);
     const rem = c.st === 'open' ? c.dur - (now() - c.t0) / 1000 : 0, remTxt = rem >= 0 ? AC.fmtT(rem) : '+' + AC.fmtT(-rem) + ' · ½ pts';
-    h += `<div class="card"><div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><h2>Question ${AC.num(c.qid)} · diapo ${q.sl} / ${AC.PUB.total} · ${AC.esc(g.titre)} · rang ${c.i + 1}/${g.qs.length} ${q.final ? '<span class="pill test">POINTS ×2</span>' : ''}${q.type === 'cloud' ? ' <span class="pill test">NUAGE DE MOTS</span>' : ''}${q.ap ? ` <span class="tag">diapo de réponse : ${q.ap}</span>` : ''}</h2>
+    h += `<div class="card"><div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><h2>Question ${AC.num(c.qid)} · diapo ${q.sl} / ${AC.PUB.total} · ${AC.esc(g.titre)} ${q.final ? '<span class="pill test">POINTS ×2</span>' : ''}${q.type === 'cloud' ? ' <span class="pill test">NUAGE DE MOTS</span>' : ''}${q.ap ? ` <span class="tag">diapo de réponse : ${q.ap}</span>` : ''}</h2>
      <div><span class="tag">${c.st === 'open' ? 'EN COURS' : c.st === 'closed' ? 'CLOSE' : 'CORRIGÉE'}</span> <b class="mono" style="font-size:1.4em" id="tm" style="${rem < 0 ? 'color:#FF8A3D' : ''}">${c.st === 'open' ? remTxt : ''}</b></div></div>
      ${c.st === 'open' ? `<div class="cable"><div id="cb" style="width:${Math.max(0, 100 * rem / c.dur)}%"></div></div>` : ''}
      <p style="font-size:1.1em;margin:.6em 0"><b>${AC.esc(q.txt)}</b></p>${q.ctx ? `<pre class="ctx">${AC.esc(q.ctx)}</pre>` : ''}
@@ -3020,7 +3020,7 @@ function startGuide() {
     <li><b>Optionnel</b> : ouvrez « le classement projeté » dans une seconde fenêtre pour l’afficher entre deux exercices.</li></ol></div></div>`;
 }
 function questTab() {
-  let h = `<p class="muted">Toutes les questions, dans l’ordre du cours. ✔ = déjà jouée. Lancer un groupe l’envoie immédiatement aux joueurs.</p>`;
+  let h = `<p class="muted">Toutes les questions, dans l’ordre du cours. ✔ = déjà jouée. Lancer une série l’envoie immédiatement aux joueurs.</p>`;
   let chap = '';
   AC.PUB.groups.forEach(g => {
     if (g.chap !== chap) { chap = g.chap; h += `<h2 style="margin-top:14px;color:#29D3FF">${AC.esc(chap)}</h2>`; }
