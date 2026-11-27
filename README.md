@@ -2,6 +2,11 @@
 
 © 2026 SAS BELM DEVELOPPEMENT. Tous droits réservés.
 
+## Version v19 (deck 500 diapos, 152 questions)
+- 8 nouvelles questions (ACL, protocoles, STP) ; 4 schémas redessinés.
+- Signaler (joueur et tour, hors ligne, revue du backlog), Rappel par page, Nouvelle partie, avatars et classement en barres, correction très détaillée dans la tour, QR « secours téléphone » (PC en premier), joueur non compté deux fois s'il change d'appareil.
+- Test final noté : 50 questions tirées d'une banque de 600 (12 thèmes), barème +1 / −1/3 / 0, identité distincte du pseudo, données dans le navigateur de la tour, export ZIP .xlsx (convention exports).
+
 Pages : `joueur.html`, `enseignant.html` (tour de contrôle, protégée par un code), `classement.html` (écran projeté).
 Publier avec GitHub Pages (branche main, racine).
 
